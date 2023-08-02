@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ApiExceptionResponse {
 
-	private String message;
+    private String message;
 
-	private HttpStatus status;
+    private HttpStatus status;
 
-	private LocalDateTime time;
+    private LocalDateTime time;
 
 }

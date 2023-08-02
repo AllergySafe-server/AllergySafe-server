@@ -16,10 +16,10 @@ import java.util.List;
 @AllArgsConstructor
 public class ValidationErrorResponse {
 
-	private HttpStatus status;
+    private HttpStatus status;
 
-	private LocalDateTime time;
+    private LocalDateTime time;
 
-	private List<String> message;
+    private List<String> message;
 
 }

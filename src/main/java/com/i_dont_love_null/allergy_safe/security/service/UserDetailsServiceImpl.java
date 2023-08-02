@@ -13,29 +13,36 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.Objects;
 
+import static com.i_dont_love_null.allergy_safe.security.utils.SecurityConstants.getAuthenticatedPassword;
+
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private static final String USERNAME_OR_PASSWORD_INVALID = "Invalid username or password.";
+    private static final String USERNAME_OR_PASSWORD_INVALID = "Invalid username or password.";
 
-	private final UserService userService;
+    private final UserService userService;
 
-	@Override
-	public UserDetails loadUserByUsername(String email) {
 
-		final AuthenticatedUserDto authenticatedUser = userService.findAuthenticatedUserByEmail(email);
+    @Override
+    public UserDetails loadUserByUsername(String email) {
 
-		if (Objects.isNull(authenticatedUser)) {
-			throw new UsernameNotFoundException(USERNAME_OR_PASSWORD_INVALID);
-		}
+        final AuthenticatedUserDto authenticatedUser = userService.findAuthenticatedUserByEmail(email);
 
-		final String authenticatedEmail = authenticatedUser.getEmail();
-		final String authenticatedPassword = authenticatedUser.getPassword();
-		final SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority("USER");
+        if (Objects.isNull(authenticatedUser)) {
+            throw new UsernameNotFoundException(USERNAME_OR_PASSWORD_INVALID);
+        }
 
-		return new User(authenticatedEmail, authenticatedPassword, Collections.singletonList(grantedAuthority));
-	}
+        final String authenticatedEmail = authenticatedUser.getEmail();
+        final String authenticatedPassword = authenticatedUser.getPassword();
+        final SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority("USER");
+
+        return new User(authenticatedEmail, authenticatedPassword, Collections.singletonList(grantedAuthority));
+    }
+
+    public com.i_dont_love_null.allergy_safe.model.User loadCurrentUser() {
+        return userService.findByPassword(getAuthenticatedPassword());
+    }
 }
