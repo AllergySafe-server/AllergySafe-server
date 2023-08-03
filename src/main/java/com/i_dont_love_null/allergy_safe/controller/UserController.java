@@ -35,12 +35,8 @@ public class UserController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<String> validateEmailToken(@RequestParam("token") String emailToken) {
-        User currentUser = userDetailsService.loadCurrentUser();
-
-        final String validateEmailTokenResponse = userService.validateEmailToken(currentUser, emailToken);
-
-        return ResponseEntity.status(HttpStatus.OK).body(validateEmailTokenResponse);
+    public ResponseEntity<Boolean> validateEmailToken(@RequestParam("token") String emailToken) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.validateEmailToken(emailToken));
     }
 
     @PutMapping
@@ -56,6 +52,4 @@ public class UserController {
     public ResponseEntity<User> getCurrentUser() {
         return ResponseEntity.status(HttpStatus.OK).body(userDetailsService.loadCurrentUser());
     }
-
-
 }

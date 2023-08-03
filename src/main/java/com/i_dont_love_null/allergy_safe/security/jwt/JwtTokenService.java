@@ -2,10 +2,8 @@ package com.i_dont_love_null.allergy_safe.security.jwt;
 
 import com.i_dont_love_null.allergy_safe.model.User;
 import com.i_dont_love_null.allergy_safe.repository.UserRepository;
-import com.i_dont_love_null.allergy_safe.security.dto.AuthenticatedUserDto;
 import com.i_dont_love_null.allergy_safe.security.dto.LoginRequest;
 import com.i_dont_love_null.allergy_safe.security.dto.LoginResponse;
-import com.i_dont_love_null.allergy_safe.security.mapper.UserMapper;
 import com.i_dont_love_null.allergy_safe.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,20 +36,15 @@ public class JwtTokenService {
 
         authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-        final AuthenticatedUserDto authenticatedUserDto = userService.findAuthenticatedUserByEmail(email);
-
-        final User user = UserMapper.INSTANCE.convertToUser(authenticatedUserDto);
+        final User user = userRepository.findByEmail(email);
         final String token = jwtTokenManager.generateToken(user);
 
-        User userIsActive = userRepository.findByEmail(email);
-
-        if (userIsActive == null || !userIsActive.isActive()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "인증되지 않았습니다.");
+        if (!user.getIsActive()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
         }
 
         log.info("{} has successfully logged in!", user.getEmail());
 
         return new LoginResponse(token);
     }
-
 }

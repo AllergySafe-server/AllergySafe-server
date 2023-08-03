@@ -41,6 +41,7 @@ public class RegistrationRequest {
                 .name(name)
                 .password(new BCryptPasswordEncoder().encode(password))
                 .emailToken(emailToken)
+                .isActive(false)
                 .build();
     }
 }

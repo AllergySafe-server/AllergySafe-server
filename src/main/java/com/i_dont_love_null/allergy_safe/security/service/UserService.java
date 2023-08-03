@@ -12,7 +12,7 @@ public interface UserService {
 
     RegistrationResponse registration(RegistrationRequest registrationRequest);
 
-    String validateEmailToken(User user, String emailToken);
+    boolean validateEmailToken(String emailToken);
 
     AuthenticatedUserDto findAuthenticatedUserByEmail(String email);
 

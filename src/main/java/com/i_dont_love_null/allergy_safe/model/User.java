@@ -1,6 +1,8 @@
 package com.i_dont_love_null.allergy_safe.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,6 +13,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Table(name = "USERS")
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class User {
 
     @Id
@@ -26,11 +29,9 @@ public class User {
     @JsonIgnore
     private String password;
 
-    @Column(nullable = false)
-    private boolean isActive;
+    private Boolean isActive;
 
     @Column(unique = true)
+    @JsonIgnore
     private String emailToken;
-
-
 }
