@@ -12,6 +12,8 @@ public interface UserService {
 
     RegistrationResponse registration(RegistrationRequest registrationRequest);
 
+    String validateEmailToken(User user, String emailToken);
+
     AuthenticatedUserDto findAuthenticatedUserByEmail(String email);
 
     PasswordChangeResponse changePassword(User user, PasswordChangeRequest passwordChangeRequest);

@@ -58,6 +58,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String validateEmailToken(User user, String emailToken) {
+        if (user.getEmailToken() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "토큰 없음");
+        }
+
+        user = user.toBuilder()
+                .isActive(true)
+                .build();
+        userRepository.save(user);
+        return "인증 완료";
+    }
+
+    @Override
     public AuthenticatedUserDto findAuthenticatedUserByEmail(String email) {
 
         final User user = findByEmail(email);
@@ -78,4 +91,5 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
         return new PasswordChangeResponse(user.getId());
     }
+
 }

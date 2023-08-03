@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.UUID;
 
 
 @Getter
@@ -34,10 +35,12 @@ public class RegistrationRequest {
     private String password;
 
     public User toEntity() {
+        String emailToken = UUID.randomUUID().toString();
         return User.builder()
                 .email(email)
                 .name(name)
                 .password(new BCryptPasswordEncoder().encode(password))
+                .emailToken(emailToken)
                 .build();
     }
 }

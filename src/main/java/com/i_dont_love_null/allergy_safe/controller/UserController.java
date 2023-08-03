@@ -34,6 +34,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(registrationResponse);
     }
 
+    @GetMapping("/validate")
+    public ResponseEntity<String> validateEmailToken(@RequestParam("token") String emailToken) {
+        User currentUser = userDetailsService.loadCurrentUser();
+
+        final String validateEmailTokenResponse = userService.validateEmailToken(currentUser, emailToken);
+
+        return ResponseEntity.status(HttpStatus.OK).body(validateEmailTokenResponse);
+    }
+
     @PutMapping
     public ResponseEntity<PasswordChangeResponse> changePassword(@Valid @RequestBody PasswordChangeRequest passwordChangeRequest) {
         User currentUser = userDetailsService.loadCurrentUser();
@@ -42,4 +51,11 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(passwordChangeResponse);
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getCurrentUser() {
+        return ResponseEntity.status(HttpStatus.OK).body(userDetailsService.loadCurrentUser());
+    }
+
+
 }

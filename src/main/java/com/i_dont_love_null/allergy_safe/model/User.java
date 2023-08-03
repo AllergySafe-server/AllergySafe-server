@@ -1,5 +1,6 @@
 package com.i_dont_love_null.allergy_safe.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -22,7 +23,14 @@ public class User {
     private String name;
 
     @Column(unique = true)
+    @JsonIgnore
     private String password;
+
+    @Column(nullable = false)
+    private boolean isActive;
+
+    @Column(unique = true)
+    private String emailToken;
 
 
 }
