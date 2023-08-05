@@ -6,14 +6,13 @@ import java.util.Locale;
 public final class ProjectConstants {
 
 
+    public static final String DEFAULT_ENCODING = "UTF-8";
 
-	public static final String DEFAULT_ENCODING = "UTF-8";
+    public static final Locale KR_LOCALE = new Locale.Builder().setLanguage("ko").setRegion("KR").build();
 
-	public static final Locale KR_LOCALE = new Locale.Builder().setLanguage("ko").setRegion("KR").build();
+    private ProjectConstants() {
 
-	private ProjectConstants() {
-
-		throw new UnsupportedOperationException();
-	}
+        throw new UnsupportedOperationException();
+    }
 
 }
