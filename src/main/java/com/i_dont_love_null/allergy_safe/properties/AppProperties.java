@@ -17,4 +17,8 @@ public class AppProperties {
     private String appDomain;
 
     private String senderEmail;
+
+    private String foodSafetyApiKey;
+
+    private String koreaPublicApiKey;
 }

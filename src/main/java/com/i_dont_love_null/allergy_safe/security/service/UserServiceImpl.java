@@ -1,8 +1,10 @@
 package com.i_dont_love_null.allergy_safe.security.service;
 
 import com.i_dont_love_null.allergy_safe.dto.MailRequest;
+import com.i_dont_love_null.allergy_safe.model.Profile;
 import com.i_dont_love_null.allergy_safe.model.User;
 import com.i_dont_love_null.allergy_safe.properties.AppProperties;
+import com.i_dont_love_null.allergy_safe.repository.ProfileRepository;
 import com.i_dont_love_null.allergy_safe.repository.UserRepository;
 import com.i_dont_love_null.allergy_safe.security.dto.*;
 import com.i_dont_love_null.allergy_safe.security.mapper.UserMapper;
@@ -31,6 +33,7 @@ public class UserServiceImpl implements UserService {
     private final AppProperties appProperties;
 
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -60,6 +63,12 @@ public class UserServiceImpl implements UserService {
 
         User user = registrationRequest.toEntity();
         user = userRepository.save(user);
+
+        Profile profile = Profile.builder()
+                .name(registrationRequest.getName())
+                .user(user)
+                .build();
+        profile = profileRepository.save(profile);
 
         final String email = user.getEmail();
         final String appName = appProperties.getAppName();
