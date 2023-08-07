@@ -1,5 +1,8 @@
 package com.i_dont_love_null.allergy_safe.controller;
 
+import com.i_dont_love_null.allergy_safe.dto.FriendRequest;
+import com.i_dont_love_null.allergy_safe.dto.IdResponse;
+import com.i_dont_love_null.allergy_safe.dto.ProfileRequest;
 import com.i_dont_love_null.allergy_safe.model.User;
 import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeRequest;
 import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeResponse;
@@ -7,6 +10,8 @@ import com.i_dont_love_null.allergy_safe.security.dto.RegistrationRequest;
 import com.i_dont_love_null.allergy_safe.security.dto.RegistrationResponse;
 import com.i_dont_love_null.allergy_safe.security.service.UserDetailsServiceImpl;
 import com.i_dont_love_null.allergy_safe.security.service.UserService;
+import com.i_dont_love_null.allergy_safe.service.FriendService;
+import com.i_dont_love_null.allergy_safe.service.ProfileService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +30,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserDetailsServiceImpl userDetailsService;
+    private final ProfileService profileService;
+    private final FriendService friendService;
 
     @PostMapping
     public ResponseEntity<RegistrationResponse> registrationRequest(@Valid @RequestBody RegistrationRequest registrationRequest) {
@@ -51,5 +58,29 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<User> getCurrentUser() {
         return ResponseEntity.status(HttpStatus.OK).body(userDetailsService.loadCurrentUser());
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<IdResponse> createProfile(@Valid @RequestBody ProfileRequest profileRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(profileService.createProfile(
+                userDetailsService.loadCurrentUser(), profileRequest
+        ));
+    }
+
+    @DeleteMapping("/profile/{id}")
+    public ResponseEntity<IdResponse> deleteProfile(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(profileService.deleteProfile(userDetailsService.loadCurrentUser(), id));
+    }
+
+    @PostMapping("/friend")
+    public ResponseEntity<IdResponse> createFriend(@Valid @RequestBody FriendRequest friendRequest){
+        return ResponseEntity.status(HttpStatus.CREATED).body(friendService.createFriend(
+                userDetailsService.loadCurrentUser(), friendRequest
+        ));
+    }
+
+    @DeleteMapping("/friend/{id}")
+    public ResponseEntity<IdResponse> deleteFriend(@PathVariable Long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(friendService.deleteFriend(userDetailsService.loadCurrentUser(), id));
     }
 }

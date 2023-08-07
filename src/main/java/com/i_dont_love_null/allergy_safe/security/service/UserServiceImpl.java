@@ -138,4 +138,9 @@ public class UserServiceImpl implements UserService {
         return new PasswordChangeResponse(user.getId());
     }
 
+    public void checkIfExists(Long userId) {
+        if (userRepository.findById(userId).isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+    }
+
 }

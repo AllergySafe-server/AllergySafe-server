@@ -18,4 +18,5 @@ public interface UserService {
 
     PasswordChangeResponse changePassword(User user, PasswordChangeRequest passwordChangeRequest);
 
+    void checkIfExists(Long userId);
 }
