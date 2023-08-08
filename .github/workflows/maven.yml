@@ -40,13 +40,19 @@ jobs:
         mkdir -p ~/.ssh
         ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
     
-    - name: File transfer via SCP
+    - name: Transfer builded jar file via SCP
       run: scp -P ${{ secrets.SERVER_PORT }} ./target/*.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/deploy/allergy-safe/web/app.jar
     
     - name: Execute remote commands
-      run: |
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "cd ~/deploy/allergy-safe/"
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose down"
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose build --no-cache"
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose up -d"
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        port: ${{ secrets.SERVER_PORT }}
+        script: |
+          cd ~/deploy/allergy-safe/
+          docker compose down
+          docker compose build --no-cache
+          docker compose up -d
 
