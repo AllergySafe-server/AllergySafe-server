@@ -45,10 +45,10 @@ jobs:
     
     - name: Execute remote commands
       run: |
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PORT }} "cd ~/deploy/allergy-safe/"
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PORT }} "docker compose down"
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PORT }} "docker compose build --no-cache"
-        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:${{ secrets.SERVER_PORT }} "docker compose up -d"
+        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "cd ~/deploy/allergy-safe/"
+        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose down"
+        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose build --no-cache"
+        ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose up -d"
 
 
 
