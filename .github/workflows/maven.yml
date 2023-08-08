@@ -41,7 +41,7 @@ jobs:
         ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
     
     - name: File transfer via SCP
-      run: scp -P ${{ secrets.SERVER_PORT }} ./target/*.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/deploy/allergy-safe/
+      run: scp -P ${{ secrets.SERVER_PORT }} ./target/*.jar ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }}:~/deploy/allergy-safe/web/app.jar
     
     - name: Execute remote commands
       run: |
@@ -49,7 +49,4 @@ jobs:
         ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose down"
         ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose build --no-cache"
         ssh -v ${{ secrets.SSH_USER }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_PORT }} "docker compose up -d"
-
-
-
 
