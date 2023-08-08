@@ -44,15 +44,6 @@ springdoc:
   cache:
     disabled: true
 
-management:
-  endpoint:
-    health:
-      show-details: ALWAYS
-    endpoints:
-      web:
-        exposure:
-          include: "*"
-
 logging:
   level:
     org.springframework: INFO

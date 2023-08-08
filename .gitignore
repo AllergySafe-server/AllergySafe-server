@@ -1,7 +1,2 @@
-docker-compose.yml
-local-docker-compose.yml
-Dockerfile
-.dockerignore
-
 .idea/
 target/
