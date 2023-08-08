@@ -2,7 +2,8 @@ package com.i_dont_love_null.allergy_safe.configuration;
 
 import com.i_dont_love_null.allergy_safe.security.jwt.JwtAuthenticationEntryPoint;
 import com.i_dont_love_null.allergy_safe.security.jwt.JwtAuthenticationFilter;
-import lombok.RequiredArgsConstructor;
+import com.i_dont_love_null.allergy_safe.security.utils.SecurityConstants;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,13 +18,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+@AllArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
+
 
     @Bean
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -36,7 +38,7 @@ public class SecurityConfiguration {
         return http.csrf().disable()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/actuator/**", "/api/health", "/api/user/validate", "/api/user/profile/share/**", "/api/swagger/**").permitAll()
+                .antMatchers(HttpMethod.GET, SecurityConstants.URI_WHITE_LIST).permitAll()
                 .antMatchers(HttpMethod.POST, "/api/user", "/api/auth/login").permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

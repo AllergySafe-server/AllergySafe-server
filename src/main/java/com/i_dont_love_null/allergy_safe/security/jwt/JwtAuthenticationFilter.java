@@ -18,6 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -30,8 +32,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsServiceImpl userDetailsService;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+        final String requestURI = req.getRequestURI();
+
+        if (new ArrayList<>(Arrays.asList(SecurityConstants.URI_WHITE_LIST)).contains(requestURI)) {
+            chain.doFilter(req, res);
+            return;
+        }
+
         final String header = req.getHeader(SecurityConstants.HEADER_STRING);
         String email = null;
         String authToken = null;
