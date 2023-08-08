@@ -19,11 +19,30 @@ spring:
       properties:
         hibernate.use_sql_comments: true
         hibernate.format_sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME:your_gmail_username}
+    password: ${GMAIL_password:your_gmail_password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 springdoc:
   show-actuator: true
   paths-to-match: /**
   packages-to-scan: com.i_dont_love_null.allergy_safe
+  swagger-ui:
+    path: /api/swagger/index.html
+    tagsSorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /api/swagger/json
+  cache:
+    disabled: true
 
 management:
   endpoint:
@@ -42,7 +61,7 @@ logging:
 jwt:
   secretKey: ${JWT_SECRET:your_jwt_secret}
   issuer: ${JWT_ISSUER:https://github.com/your-github-id}
-  expirationMinute: 60
+  expirationMinute: ${JWT_EXPIRATION_MINUTE:60}
 
 swagger:
   contact-name: ${SWAGGER_CONTACT_NAME:your-name}
@@ -53,3 +72,10 @@ swagger:
   app-version: ${SWAGGER_APP_VERSION:1.0.0}
   app-license-url: ${SWAGGER_APP_LICENSE_URL:https://www.apache.org/licenses/LICENSE-2.0.html}
   app-license: ${SWAGGER_APP_LICENSE:Apache 2.0}
+
+application:
+  appName: ${SWAGGER_APP_NAME:Example App}
+  appDomain: ${SWAGGER_APP_DOMAIN:http://localhost:8080}
+  senderEmail: ${GMAIL_USERNAME:your_gmail_username}
+  foodSafetyApiKey: ${FOOD_SAFETY_API_KEY:your_food_safety_api_key}
+  koreaPublicApiKey: ${KOREA_PUBLIC_API_KEY:your_korea_public_api_key}

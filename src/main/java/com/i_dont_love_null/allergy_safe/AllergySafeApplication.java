@@ -10,9 +10,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableAspectJAutoProxy
 public class AllergySafeApplication {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		SpringApplication.run(AllergySafeApplication.class, args);
-	}
+        SpringApplication.run(AllergySafeApplication.class, args);
+    }
 
 }
