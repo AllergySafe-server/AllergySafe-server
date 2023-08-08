@@ -1,8 +1,7 @@
 package com.i_dont_love_null.allergy_safe.controller;
 
-import com.i_dont_love_null.allergy_safe.dto.FriendRequest;
-import com.i_dont_love_null.allergy_safe.dto.IdResponse;
-import com.i_dont_love_null.allergy_safe.dto.ProfileRequest;
+import com.i_dont_love_null.allergy_safe.dto.*;
+import com.i_dont_love_null.allergy_safe.model.Profile;
 import com.i_dont_love_null.allergy_safe.model.User;
 import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeRequest;
 import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeResponse;
@@ -60,27 +59,51 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userDetailsService.loadCurrentUser());
     }
 
-    @PostMapping("/profile")
+    @GetMapping("/profile/me")
+    public ResponseEntity<ProfileListResponse> getProfileList() {
+        return ResponseEntity.status(HttpStatus.OK).body(profileService.getList(userDetailsService.loadCurrentUser()));
+    }
+
+    @PostMapping("/profile/family")
     public ResponseEntity<IdResponse> createProfile(@Valid @RequestBody ProfileRequest profileRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(profileService.createProfile(
                 userDetailsService.loadCurrentUser(), profileRequest
         ));
     }
 
-    @DeleteMapping("/profile/{id}")
-    public ResponseEntity<IdResponse> deleteProfile(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(profileService.deleteProfile(userDetailsService.loadCurrentUser(), id));
+    @DeleteMapping("/profile/family/{profileId}")
+    public ResponseEntity<IdResponse> deleteProfile(@PathVariable Long profileId) {
+        return ResponseEntity.status(HttpStatus.OK).body(profileService.deleteProfile(userDetailsService.loadCurrentUser(), profileId));
+    }
+
+    @PostMapping("/profile/element/{profileId}")
+    public ResponseEntity<IdResponse> createElement(@PathVariable Long profileId, @Valid @RequestBody ProfileElementRequest profileElementRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(profileService.createElement(
+                userDetailsService.loadCurrentUser(), profileId, profileElementRequest
+        ));
+    }
+
+    @DeleteMapping("/profile/element/{profileId}")
+    public ResponseEntity<IdResponse> deleteElement(@PathVariable Long profileId, @Valid @RequestBody ProfileElementRequest profileElementRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(profileService.deleteElement(
+                userDetailsService.loadCurrentUser(), profileId, profileElementRequest
+        ));
+    }
+
+    @GetMapping("/profile/share/{profileId}")
+    public ResponseEntity<Profile> getProfileByIdFromShare(@PathVariable Long profileId, @RequestParam("token") String token) {
+        return ResponseEntity.status(HttpStatus.OK).body(profileService.getProfileByIdAndValidateByEmailToken(profileId, token));
     }
 
     @PostMapping("/friend")
-    public ResponseEntity<IdResponse> createFriend(@Valid @RequestBody FriendRequest friendRequest){
+    public ResponseEntity<IdResponse> createFriend(@Valid @RequestBody FriendRequest friendRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(friendService.createFriend(
                 userDetailsService.loadCurrentUser(), friendRequest
         ));
     }
 
-    @DeleteMapping("/friend/{id}")
-    public ResponseEntity<IdResponse> deleteFriend(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(friendService.deleteFriend(userDetailsService.loadCurrentUser(), id));
+    @DeleteMapping("/friend/{profileId}")
+    public ResponseEntity<IdResponse> deleteFriend(@PathVariable Long profileId) {
+        return ResponseEntity.status(HttpStatus.OK).body(friendService.deleteFriend(userDetailsService.loadCurrentUser(), profileId));
     }
 }

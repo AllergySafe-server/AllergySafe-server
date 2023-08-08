@@ -27,7 +27,7 @@ public class FoodService {
 
     private final IdResponse idResponse;
 
-    public FoodResponse getFoodById(Long id) {
+    public FoodResponse getFoodResponseById(Long id) {
         Optional<Food> food = foodRepository.findById(id);
 
         if (food.isEmpty()) {
@@ -35,6 +35,16 @@ public class FoodService {
         }
 
         return food.get().toFoodResponse();
+    }
+
+    public Food getFoodById(Long id) {
+        Optional<Food> food = foodRepository.findById(id);
+
+        if (food.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 식품입니다.");
+        }
+
+        return food.get();
     }
 
     public IdResponse createFood(FoodRequest foodRequest) {

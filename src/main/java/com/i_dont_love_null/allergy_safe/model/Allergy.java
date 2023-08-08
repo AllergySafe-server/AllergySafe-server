@@ -1,7 +1,6 @@
 package com.i_dont_love_null.allergy_safe.model;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.i_dont_love_null.allergy_safe.utils.Nameable;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,8 +10,8 @@ import javax.persistence.*;
 @Builder(toBuilder = true)
 @Getter
 @Entity
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Allergy {
+
+public class Allergy implements Nameable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ALLERGY_ID")
