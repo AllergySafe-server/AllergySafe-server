@@ -156,7 +156,7 @@
 
     <build>
 
-        <finalName>spring-boot-boilerplate</finalName>
+        <finalName>allergy-safe</finalName>
 
         <plugins>
 
