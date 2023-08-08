@@ -1,8 +1,6 @@
 package com.i_dont_love_null.allergy_safe.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +12,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @Getter
 @Entity
-@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+
 public class Profile {
 
     @Id
@@ -25,8 +23,8 @@ public class Profile {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID")
     @JsonIgnore
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @ManyToMany(cascade = CascadeType.REMOVE)

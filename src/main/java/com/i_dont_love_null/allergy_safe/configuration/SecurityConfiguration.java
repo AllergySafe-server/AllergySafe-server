@@ -36,7 +36,7 @@ public class SecurityConfiguration {
         return http.csrf().disable()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/health", "/api/user/register", "/api/user/validate", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/actuator/**", "/api/health", "/api/user/validate", "/api/user/profile/share/**", "/api/swagger/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/user", "/api/auth/login").permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

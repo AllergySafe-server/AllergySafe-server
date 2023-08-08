@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class MedicineController {
     private final MedicineService medicineService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{medicineId}")
     @ResponseBody
-    public ResponseEntity<MedicineResponse> getMedicineById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(medicineService.getMedicineById(id));
+    public ResponseEntity<MedicineResponse> getMedicineById(@PathVariable Long medicineId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(medicineService.getMedicineResponseById(medicineId));
     }
 }

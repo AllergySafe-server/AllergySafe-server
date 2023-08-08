@@ -35,6 +35,14 @@ springdoc:
   show-actuator: true
   paths-to-match: /**
   packages-to-scan: com.i_dont_love_null.allergy_safe
+  swagger-ui:
+    path: /api/swagger/index.html
+    tagsSorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /api/swagger/json
+  cache:
+    disabled: true
 
 management:
   endpoint:

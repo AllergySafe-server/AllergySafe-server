@@ -26,9 +26,9 @@ public class FoodController {
         return ResponseEntity.status(HttpStatus.CREATED).body(foodService.createFood(foodRequest));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{foodId}")
     @ResponseBody
-    public ResponseEntity<FoodResponse> getFoodById(@PathVariable Long id) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(foodService.getFoodById(id));
+    public ResponseEntity<FoodResponse> getFoodById(@PathVariable Long foodId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(foodService.getFoodResponseById(foodId));
     }
 }
