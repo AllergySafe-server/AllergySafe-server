@@ -38,7 +38,8 @@ public class FriendService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신은 친구로 추가할 수 없습니다.");
         userService.checkIfExists(friendRequest.getUserId());
 
-        if (isMyFriend(user, friendRequest.getUserId())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록된 친구입니다.");
+        if (isMyFriend(user, friendRequest.getUserId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록된 친구입니다.");
 
         Friend newFriend = Friend.builder().userId(friendRequest.getUserId()).build();
         friendRepository.save(newFriend);
@@ -51,16 +52,19 @@ public class FriendService {
 
     public IdResponse deleteFriend(User user, Long profileId) {
         Profile profile = profileService.getProfileById(profileId);
-        if (!isMyFriend(user, profile.getUser().getId())) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "접근할 수 없는 친구입니다.");
+        if (!isMyFriend(user, profile.getUser().getId()))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "접근할 수 없는 친구입니다.");
 
         List<Friend> friends = user.getFriends();
         Long friendIdToDelete = null;
 
         for (Friend friend : friends) {
-            if (profileId.equals(userService.getUserById(friend.getUserId()).getProfiles().get(0).getId())) friendIdToDelete = friend.getId();
+            if (profileId.equals(userService.getUserById(friend.getUserId()).getProfiles().get(0).getId()))
+                friendIdToDelete = friend.getId();
         }
 
-        if (Objects.isNull(friendIdToDelete)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "내 친구 목록에 없는 친구입니다.");
+        if (Objects.isNull(friendIdToDelete))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "내 친구 목록에 없는 친구입니다.");
 
         List<Friend> newFriends = new ArrayList<>();
         for (Friend newFriend : friends) {

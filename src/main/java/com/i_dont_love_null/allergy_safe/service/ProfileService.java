@@ -43,7 +43,8 @@ public class ProfileService {
 
     public IdResponse deleteProfile(User user, Long profileId) {
         Profile profile = getProfileById(profileId);
-        if (user.getProfiles().get(0).getId().equals(profileId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자신의 프로필은 삭제할 수 없습니다.");
+        if (user.getProfiles().get(0).getId().equals(profileId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자신의 프로필은 삭제할 수 없습니다.");
 
         checkIfFamily(user, profileId);
         profileRepository.save(profile.toBuilder()
@@ -97,7 +98,8 @@ public class ProfileService {
                 else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 알러지 항원입니다.");
 
                 for (Allergy allergy1 : allergies) {
-                    if (allergy1.getId().equals(elementId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 프로필에 등록된 알러지 항원입니다.");
+                    if (allergy1.getId().equals(elementId))
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 프로필에 등록된 알러지 항원입니다.");
                 }
 
                 allergies.add(allergy);
@@ -111,7 +113,8 @@ public class ProfileService {
                 else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 식품 원재료입니다.");
 
                 for (Material material1 : materials) {
-                    if (material1.getId().equals(elementId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 프로필에 등록된 식품 원재료입니다.");
+                    if (material1.getId().equals(elementId))
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 프로필에 등록된 식품 원재료입니다.");
                 }
 
                 materials.add(material);
@@ -125,7 +128,8 @@ public class ProfileService {
                 else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 의약품 성분입니다.");
 
                 for (Ingredient ingredient1 : ingredients) {
-                    if (ingredient1.getId().equals(elementId)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 프로필에 등록된 의약품 성분입니다.");
+                    if (ingredient1.getId().equals(elementId))
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 프로필에 등록된 의약품 성분입니다.");
                 }
 
                 ingredients.add(ingredient);
@@ -166,7 +170,8 @@ public class ProfileService {
                     if (!allergy1.getId().equals(elementId)) newAllergies.add(allergy1);
                 }
 
-                if (allergies.size() == newAllergies.size()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 알러지 항원입니다.");
+                if (allergies.size() == newAllergies.size())
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 알러지 항원입니다.");
 
                 allergies = newAllergies;
             }
@@ -178,7 +183,8 @@ public class ProfileService {
                     if (!material1.getId().equals(elementId)) newMaterials.add(material1);
                 }
 
-                if (materials.size() == newMaterials.size()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 식품 원재료입니다.");
+                if (materials.size() == newMaterials.size())
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 식품 원재료입니다.");
 
                 materials = newMaterials;
             }
@@ -190,7 +196,8 @@ public class ProfileService {
                     if (!ingredient1.getId().equals(elementId)) newIngredients.add(ingredient1);
                 }
 
-                if (ingredients.size() == newIngredients.size()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 의약품 성분입니다.");
+                if (ingredients.size() == newIngredients.size())
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 의약품 성분입니다.");
 
                 ingredients = newIngredients;
             }
@@ -234,7 +241,8 @@ public class ProfileService {
         for (Profile foundProfile : user.getProfiles()) {
             if (foundProfile.getId().equals(profileId)) profile = foundProfile;
         }
-        if (Objects.isNull(profile)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "프로필이 존재하지 않거나 토큰과 일치하지 않습니다.");
+        if (Objects.isNull(profile))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "프로필이 존재하지 않거나 토큰과 일치하지 않습니다.");
 
         return profile;
     }

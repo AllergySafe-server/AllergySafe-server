@@ -14,7 +14,7 @@ public class SecurityConstants {
 
     public static final String HEADER_STRING = "Authorization";
 
-    public static final String[] URI_WHITE_LIST = new String[]{"/api/health", "/api/user/validate", "/api/user/profile/share/**", "/api/swagger/**"};
+    public static final String[] URI_WHITE_LIST = new String[]{"/api/health", "/api/user/validate", "/api/user/profile/share/**", "/api/diary/{profileId}", "/api/swagger/**"};
 
     public static String getAuthenticatedPassword() {
 

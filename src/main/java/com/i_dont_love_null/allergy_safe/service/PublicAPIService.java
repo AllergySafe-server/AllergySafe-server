@@ -119,7 +119,8 @@ public class PublicAPIService {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> result = restTemplate.getForEntity(uri, String.class);
-        if (result.getStatusCode() != HttpStatus.OK) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
+        if (result.getStatusCode() != HttpStatus.OK)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
         String json = result.getBody();
 
         Gson gson = new Gson();
@@ -127,7 +128,8 @@ public class PublicAPIService {
         Map<String, Object> c005Data = (Map<String, Object>) jsonData.get("C005");
         List<Map<String, Object>> rowsData = (List<Map<String, Object>>) c005Data.get("row");
 
-        if (Objects.isNull(rowsData)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
+        if (Objects.isNull(rowsData))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
 
         for (Map<String, Object> rowData : rowsData) {
             if (rowData.containsKey("PRDLST_REPORT_NO")) {

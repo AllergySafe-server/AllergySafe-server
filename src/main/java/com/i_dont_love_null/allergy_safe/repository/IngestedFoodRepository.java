@@ -1,0 +1,7 @@
+package com.i_dont_love_null.allergy_safe.repository;
+
+import com.i_dont_love_null.allergy_safe.model.IngestedFood;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface IngestedFoodRepository extends JpaRepository<IngestedFood, Long> {
+}
