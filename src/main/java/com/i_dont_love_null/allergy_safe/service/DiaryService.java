@@ -1,15 +1,13 @@
 package com.i_dont_love_null.allergy_safe.service;
 
-import com.i_dont_love_null.allergy_safe.dto.DiaryElementRequest;
-import com.i_dont_love_null.allergy_safe.dto.DiaryRequest;
-import com.i_dont_love_null.allergy_safe.dto.DiaryResponse;
-import com.i_dont_love_null.allergy_safe.dto.IdResponse;
+import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.model.*;
 import com.i_dont_love_null.allergy_safe.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 
@@ -42,7 +40,7 @@ public class DiaryService {
 
     private final IdResponse idResponse;
 
-    public DiaryResponse createDiary(Long profileId, DiaryRequest diaryRequest) {
+    public IdResponse createDiary(Long profileId, DiaryRequest diaryRequest) {
         Profile profile;
         Optional<Profile> optionalProfile = profileRepository.findById(profileId);
 
@@ -56,6 +54,10 @@ public class DiaryService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "미래 날짜에 다이어리를 생성할 수 없습니다.");
         }
 
+        if (diaryRepository.existsByProfileIdAndDate(profileId, diaryDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 해당 날짜에 다이어리가 존재합니다.");
+        }
+
         Diary newDiary = Diary.builder()
                 .date(diaryDate)
                 .profile(profile)
@@ -63,16 +65,15 @@ public class DiaryService {
 
         profile.getDiaries().add(newDiary);
 
-        Diary createDiary = diaryRepository.save(newDiary);
+        Diary createdDiary = diaryRepository.save(newDiary);
+        idResponse.setId(createdDiary.getId());
 
-        DiaryResponse diaryResponse = new DiaryResponse();
-        diaryResponse.setDate(createDiary.getDate());
-        return diaryResponse;
+        return idResponse;
     }
 
-    public IdResponse addDiaryElement(Long diaryId, DiaryElementRequest diaryElementRequest) {
+    public IdResponse addDiaryElement(Long diaryId, DiaryElementCreateRequest diaryElementCreateRequest) {
 
-        Long elementId = diaryElementRequest.getId();
+        Long elementId = diaryElementCreateRequest.getId();
         Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
         Diary diary;
 
@@ -84,13 +85,19 @@ public class DiaryService {
         List<OccuredSymptom> occuredSymptoms = diary.getOccuredSymptoms();
 
         LocalDateTime currentDateTime = LocalDateTime.now();
-        LocalDateTime datetime = diaryElementRequest.getDateTime();
+        LocalDateTime datetime = diaryElementCreateRequest.getDateTime();
+
+        LocalDateTime minimumDateTime = datetime.withHour(0).withMinute(0).withSecond(0);
+
+        if (datetime.isBefore(minimumDateTime)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "선택한 일자의 정보만 등록할 수 있습니다.");
+        }
 
         if (datetime.isAfter(currentDateTime)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "미래의 날짜로는 등록할 수 없습니다.");
         }
 
-        switch (diaryElementRequest.getDiaryElementType()) {
+        switch (diaryElementCreateRequest.getDiaryElementType()) {
             case FOOD -> {
                 Optional<Food> foodOptional = foodRepository.findById(elementId);
                 Food food;
@@ -158,9 +165,10 @@ public class DiaryService {
         return idResponse;
     }
 
-    public IdResponse deleteDiaryElement(Long diaryId, DiaryElementRequest diaryElementRequest) {
+    @Transactional
+    public IdResponse deleteDiaryElement(Long diaryId, DiaryElementDeleteRequest diaryElementDeleteRequest) {
 
-        Long elementId = diaryElementRequest.getId();
+        Long elementId = diaryElementDeleteRequest.getId();
         Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
         Diary diary;
 
@@ -171,17 +179,18 @@ public class DiaryService {
         List<TakenMedicine> takenMedicines = diary.getTakenMedicines();
         List<OccuredSymptom> occuredSymptoms = diary.getOccuredSymptoms();
 
-        switch (diaryElementRequest.getDiaryElementType()) {
+        switch (diaryElementDeleteRequest.getDiaryElementType()) {
             case FOOD -> {
                 List<IngestedFood> newIngestedFoods = new ArrayList<>();
 
                 for (IngestedFood ingestedFood : ingestedFoods) {
-                    if (!ingestedFood.getId().equals(elementId)) newIngestedFoods.add(ingestedFood);
+                    if (!ingestedFood.getFood().getId().equals(elementId)) newIngestedFoods.add(ingestedFood);
                 }
 
                 if (ingestedFoods.size() == newIngestedFoods.size())
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "다이어리에 등록되지 않은 음식입니다.");
 
+                ingestedFoodRepository.deleteByFoodId(elementId);
                 ingestedFoods = newIngestedFoods;
             }
 
@@ -189,12 +198,13 @@ public class DiaryService {
                 List<TakenMedicine> newTakenMedicines = new ArrayList<>();
 
                 for (TakenMedicine takenMedicine : takenMedicines) {
-                    if (!takenMedicine.getId().equals(elementId)) newTakenMedicines.add(takenMedicine);
+                    if (!takenMedicine.getMedicine().getId().equals(elementId)) newTakenMedicines.add(takenMedicine);
                 }
 
                 if (takenMedicines.size() == newTakenMedicines.size())
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "다이어리에 등록되지 않은 약품입니다.");
 
+                takenMedicineRepository.deleteByMedicineId(elementId);
                 takenMedicines = newTakenMedicines;
             }
 
@@ -202,12 +212,13 @@ public class DiaryService {
                 List<OccuredSymptom> newOccuredSymptoms = new ArrayList<>();
 
                 for (OccuredSymptom occuredSymptom : occuredSymptoms) {
-                    if (!occuredSymptom.getId().equals(elementId)) newOccuredSymptoms.add(occuredSymptom);
+                    if (!occuredSymptom.getSymptom().getId().equals(elementId)) newOccuredSymptoms.add(occuredSymptom);
                 }
 
                 if (occuredSymptoms.size() == newOccuredSymptoms.size())
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "다이어리에 등록되지 않은 증상입니다.");
 
+                occuredSymptomRepository.deleteBySymptomId(elementId);
                 occuredSymptoms = newOccuredSymptoms;
             }
         }
@@ -243,7 +254,7 @@ public class DiaryService {
         }
     }
 
-    public void deleteDiary(Long diaryId) {
+    public IdResponse deleteDiary(Long diaryId) {
         Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
         Diary diary;
 
@@ -254,6 +265,9 @@ public class DiaryService {
         profile.getDiaries().remove(diary);
 
         diaryRepository.delete(diary);
+        idResponse.setId(diaryId);
+
+        return idResponse;
     }
 }
 

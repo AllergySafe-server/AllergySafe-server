@@ -1,9 +1,6 @@
 package com.i_dont_love_null.allergy_safe.controller;
 
-import com.i_dont_love_null.allergy_safe.dto.DiaryElementRequest;
-import com.i_dont_love_null.allergy_safe.dto.DiaryRequest;
-import com.i_dont_love_null.allergy_safe.dto.DiaryResponse;
-import com.i_dont_love_null.allergy_safe.dto.IdResponse;
+import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.service.DiaryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,22 +26,22 @@ public class DiaryController {
     private DiaryService diaryService;
 
     @PostMapping("/{profileId}")
-    public ResponseEntity<DiaryResponse> createDiary(@PathVariable("profileId") Long profileId, @RequestBody DiaryRequest diaryRequest) {
-        final DiaryResponse diaryResponse = diaryService.createDiary(profileId, diaryRequest);
+    public ResponseEntity<IdResponse> createDiary(@PathVariable("profileId") Long profileId, @RequestBody DiaryRequest diaryRequest) {
+        final IdResponse idResponse = diaryService.createDiary(profileId, diaryRequest);
 
-        return ResponseEntity.status(HttpStatus.OK).body(diaryResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(idResponse);
     }
 
     @PostMapping("/element/{diaryId}")
-    public ResponseEntity<IdResponse> addDiaryElement(@PathVariable("diaryId") Long diaryId, @RequestBody DiaryElementRequest diaryElementRequest) {
-        final IdResponse idResponse = diaryService.addDiaryElement(diaryId, diaryElementRequest);
+    public ResponseEntity<IdResponse> addDiaryElement(@PathVariable("diaryId") Long diaryId, @RequestBody DiaryElementCreateRequest diaryElementCreateRequest) {
+        final IdResponse idResponse = diaryService.addDiaryElement(diaryId, diaryElementCreateRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(idResponse);
     }
 
     @DeleteMapping("/element/{diaryId}")
-    public ResponseEntity<IdResponse> deleteDiaryElement(@PathVariable("diaryId") Long diaryId, @Valid @RequestBody DiaryElementRequest diaryElementRequest) {
-        final IdResponse idResponse = diaryService.deleteDiaryElement(diaryId, diaryElementRequest);
+    public ResponseEntity<IdResponse> deleteDiaryElement(@PathVariable("diaryId") Long diaryId, @Valid @RequestBody DiaryElementDeleteRequest diaryElementDeleteRequest) {
+        final IdResponse idResponse = diaryService.deleteDiaryElement(diaryId, diaryElementDeleteRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(idResponse);
     }
@@ -61,9 +58,9 @@ public class DiaryController {
     }
 
     @DeleteMapping("/{diaryId}")
-    public ResponseEntity<String> deleteDiary(@PathVariable("diaryId") Long diaryId) {
-        diaryService.deleteDiary(diaryId);
-        return ResponseEntity.ok("해당 다이어리가 삭제 되었습니다.");
+    public ResponseEntity<IdResponse> deleteDiary(@PathVariable("diaryId") Long diaryId) {
+        final IdResponse idResponse = diaryService.deleteDiary(diaryId);
+        return ResponseEntity.ok(idResponse);
     }
 
 
