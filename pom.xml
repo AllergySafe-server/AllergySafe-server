@@ -145,11 +145,18 @@
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>
 
-        <finalName>spring-boot-boilerplate</finalName>
+        <finalName>allergy-safe</finalName>
 
         <plugins>
 

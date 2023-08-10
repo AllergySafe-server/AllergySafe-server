@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  db:
+    container_name: allergy-safe-db
+    image: mariadb:10
+    volumes:
+      - ./db/data:/var/lib/mysql
+    expose:
+      - "3306"
+    environment:
+      MYSQL_DATABASE: your_db_name
+      MYSQL_ROOT_PASSWORD: your_db_password
+      TZ: Asia/Seoul
+    restart: unless-stopped
+
+  app:
+    container_name: allergy-safe-app
+    image: openjdk:19
+    volumes:
+      - ./web:/root
+    command: /bin/bash -c "/root/wait-for-it.sh db:3306 -s -t 100 -- java -jar /root/app.jar"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  db_data:

@@ -35,15 +35,14 @@ springdoc:
   show-actuator: true
   paths-to-match: /**
   packages-to-scan: com.i_dont_love_null.allergy_safe
-
-management:
-  endpoint:
-    health:
-      show-details: ALWAYS
-    endpoints:
-      web:
-        exposure:
-          include: "*"
+  swagger-ui:
+    path: /api/swagger/index.html
+    tagsSorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /api/swagger/json
+  cache:
+    disabled: true
 
 logging:
   level:
@@ -53,13 +52,14 @@ logging:
 jwt:
   secretKey: ${JWT_SECRET:your_jwt_secret}
   issuer: ${JWT_ISSUER:https://github.com/your-github-id}
-  expirationMinute: 60
+  expirationMinute: ${JWT_EXPIRATION_MINUTE:60}
 
 swagger:
   contact-name: ${SWAGGER_CONTACT_NAME:your-name}
   contact-mail: ${SWAGGER_CONTACT_MAIL:example@example.com}
   contact-url: ${SWAGGER_CONTACT_URL:https://example.com}
   app-name: ${SWAGGER_APP_NAME:Example App}
+  app-domain: ${SWAGGER_APP_DOMAIN:http://localhost:8080}
   app-description: ${SWAGGER_APP_DESCRIPTION:Example App Description}
   app-version: ${SWAGGER_APP_VERSION:1.0.0}
   app-license-url: ${SWAGGER_APP_LICENSE_URL:https://www.apache.org/licenses/LICENSE-2.0.html}
@@ -69,3 +69,5 @@ application:
   appName: ${SWAGGER_APP_NAME:Example App}
   appDomain: ${SWAGGER_APP_DOMAIN:http://localhost:8080}
   senderEmail: ${GMAIL_USERNAME:your_gmail_username}
+  foodSafetyApiKey: ${FOOD_SAFETY_API_KEY:your_food_safety_api_key}
+  koreaPublicApiKey: ${KOREA_PUBLIC_API_KEY:your_korea_public_api_key}

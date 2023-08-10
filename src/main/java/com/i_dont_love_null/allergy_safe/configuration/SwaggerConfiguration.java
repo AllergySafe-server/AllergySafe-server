@@ -7,11 +7,14 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 import static io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP;
 
@@ -23,6 +26,8 @@ import static io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP;
 public class SwaggerConfiguration {
 
     private String appName;
+
+    private String appDomain;
 
     private String appDescription;
 
@@ -38,6 +43,7 @@ public class SwaggerConfiguration {
 
     private String contactMail;
 
+
     @Bean
     public OpenAPI openAPI() {
 
@@ -51,6 +57,11 @@ public class SwaggerConfiguration {
         openAPI.setInfo(apiInformation);
         openAPI.setComponents(components);
         openAPI.addSecurityItem(new SecurityRequirement().addList(schemeName));
+
+        Server server = new Server();
+        server.setUrl(appDomain);
+        server.setDescription(appName);
+        openAPI.setServers(List.of(server));
 
         return openAPI;
     }
