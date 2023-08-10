@@ -20,7 +20,7 @@ public class DiaryElementRequest {
     @Schema(description = "추가할 요소의 id(food라면 food의 id)", example = "1")
     private Long id;
 
-    @Schema(description = "추가할 요소를 동작한 시간(food라면 food를 먹은 시간", example = "yyyy-MM-dd HH:mm:ss")
+    @Schema(description = "추가할 요소를 동작한 시간(food라면 food를 먹은 시간)", example = "2023-08-10T20:30:45")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateTime;
 }

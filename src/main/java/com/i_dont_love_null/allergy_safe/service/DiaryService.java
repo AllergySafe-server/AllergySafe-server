@@ -58,7 +58,7 @@ public class DiaryService {
 
         Diary newDiary = Diary.builder()
                 .date(diaryDate)
-                .profiles(new ArrayList<>(List.of(profile)))
+                .profile(profile)
                 .build();
 
         profile.getDiaries().add(newDiary);
@@ -193,7 +193,7 @@ public class DiaryService {
                 }
 
                 if (takenMedicines.size() == newTakenMedicines.size())
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 식품 원재료입니다.");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "다이어리에 등록되지 않은 약품입니다.");
 
                 takenMedicines = newTakenMedicines;
             }
@@ -206,7 +206,7 @@ public class DiaryService {
                 }
 
                 if (occuredSymptoms.size() == newOccuredSymptoms.size())
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "프로필에 등록되지 않은 의약품 성분입니다.");
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "다이어리에 등록되지 않은 증상입니다.");
 
                 occuredSymptoms = newOccuredSymptoms;
             }
@@ -225,13 +225,10 @@ public class DiaryService {
     }
 
     public DiaryResponse getDiaryList(Long profileId, LocalDate date) {
-        Optional<Diary> optionalDiary = diaryRepository.findByProfilesIdAndDate(profileId, date);
+        Optional<Diary> optionalDiary = diaryRepository.findByProfileIdAndDate(profileId, date);
         if (optionalDiary.isPresent()) {
             Diary diary = optionalDiary.get();
-            Profile profile = diary.getProfiles().stream()
-                    .filter(p -> p.getId().equals(profileId))
-                    .findFirst()
-                    .orElseThrow(() -> new NotFoundException("다이어리에서 프로필을 찾을 수 없습니다."));
+            Profile profile = diary.getProfile();
 
             DiaryResponse diaryResponse = new DiaryResponse();
             diaryResponse.setId(diary.getId());
@@ -253,8 +250,8 @@ public class DiaryService {
         if (diaryOptional.isPresent()) diary = diaryOptional.get();
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 다이어리입니다.");
 
-        diary.getProfiles().forEach(profile -> profile.getDiaries().remove(diary));
-        diary.getProfiles().clear();
+        Profile profile = diary.getProfile();
+        profile.getDiaries().remove(diary);
 
         diaryRepository.delete(diary);
     }

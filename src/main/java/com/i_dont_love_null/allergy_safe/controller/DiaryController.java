@@ -35,14 +35,14 @@ public class DiaryController {
         return ResponseEntity.status(HttpStatus.OK).body(diaryResponse);
     }
 
-    @PostMapping("/diary/element/{diaryId}")
+    @PostMapping("/element/{diaryId}")
     public ResponseEntity<IdResponse> addDiaryElement(@PathVariable("diaryId") Long diaryId, @RequestBody DiaryElementRequest diaryElementRequest) {
         final IdResponse idResponse = diaryService.addDiaryElement(diaryId, diaryElementRequest);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(idResponse);
     }
 
-    @DeleteMapping("/profile/element/{diaryId}")
+    @DeleteMapping("/element/{diaryId}")
     public ResponseEntity<IdResponse> deleteDiaryElement(@PathVariable("diaryId") Long diaryId, @Valid @RequestBody DiaryElementRequest diaryElementRequest) {
         final IdResponse idResponse = diaryService.deleteDiaryElement(diaryId, diaryElementRequest);
 

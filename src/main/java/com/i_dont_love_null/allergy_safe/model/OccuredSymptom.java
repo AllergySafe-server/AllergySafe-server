@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Getter
 @Entity
+@Table(name = "OccuredSymptom")
 public class OccuredSymptom {
 
     @Id

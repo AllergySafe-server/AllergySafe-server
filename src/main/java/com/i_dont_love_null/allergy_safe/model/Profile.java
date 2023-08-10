@@ -45,9 +45,6 @@ public class Profile {
             inverseJoinColumns = @JoinColumn(name = "INGREDIENT_ID"))
     private List<Ingredient> ingredients = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "PROFILE_DIARY",
-            joinColumns = @JoinColumn(name = "PROFILE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "DIARY_ID"))
-    private List<Diary> diaries = new ArrayList<>();
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Diary> diaries;
 }

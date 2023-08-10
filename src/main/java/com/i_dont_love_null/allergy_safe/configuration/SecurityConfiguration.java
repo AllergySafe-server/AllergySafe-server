@@ -40,7 +40,6 @@ public class SecurityConfiguration {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET, SecurityConstants.URI_WHITE_LIST).permitAll()
                 .antMatchers(HttpMethod.POST, "/api/user", "/api/auth/login", "/api/diary").permitAll()
-                .antMatchers(HttpMethod.DELETE, "/api/diary/{diaryId}").permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

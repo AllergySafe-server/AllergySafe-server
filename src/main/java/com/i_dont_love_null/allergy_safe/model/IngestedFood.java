@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Getter
 @Entity
+@Table(name = "IngestedFood")
 public class IngestedFood {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

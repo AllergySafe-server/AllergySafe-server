@@ -23,9 +23,9 @@ public class Diary {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
-    @ManyToMany(mappedBy = "diaries", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Profile> profiles = new ArrayList<>();
-
+    @ManyToOne
+    @JoinColumn(name = "PROFILE_ID")
+    private Profile profile;
     @OneToMany(mappedBy = "diary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IngestedFood> ingestedFoods = new ArrayList<>();
 
