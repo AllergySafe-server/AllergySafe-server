@@ -40,8 +40,9 @@ public class JwtTokenService {
         final String token = jwtTokenManager.generateToken(user);
 
         if (!user.getIsActive()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일 인증이 완료되지 않았습니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일인증이 완료되지 않았거나 탈퇴된 사용자입니다");
         }
+
 
         log.info("{} has successfully logged in!", user.getEmail());
 

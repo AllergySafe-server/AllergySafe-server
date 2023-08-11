@@ -1,5 +1,6 @@
 package com.i_dont_love_null.allergy_safe.security.service;
 
+import com.i_dont_love_null.allergy_safe.dto.IdResponse;
 import com.i_dont_love_null.allergy_safe.dto.MailRequest;
 import com.i_dont_love_null.allergy_safe.model.Profile;
 import com.i_dont_love_null.allergy_safe.model.User;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.mail.MessagingException;
+import javax.persistence.Id;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -45,6 +47,8 @@ public class UserServiceImpl implements UserService {
     private final EmailService emailService;
 
     private final MailRequest mailRequest;
+
+    private final IdResponse idResponse;
 
     @Override
     public User findByEmail(String username) {
@@ -154,4 +158,19 @@ public class UserServiceImpl implements UserService {
         return user.get();
     }
 
+    @Override
+    public IdResponse deleteUser(User user) {
+        Optional<User> checkUser = userRepository.findById(user.getId());
+        if(checkUser.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
+        }
+
+        user = user.toBuilder()
+                .isActive(false)
+                .build();
+        userRepository.save(user);
+
+        idResponse.setId(user.getId());
+        return idResponse;
+    }
 }
