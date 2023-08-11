@@ -111,4 +111,33 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(idResponse);
     }
+
+    @GetMapping("/password-reset")
+    public ResponseEntity<SendPasswordResetEmailResponse> sendPasswordResetEmail(@RequestParam("email") String email) {
+        final SendPasswordResetEmailResponse sendPasswordResetEmailResponse = userService.sendPasswordResetEmail(email);
+        return ResponseEntity.status(HttpStatus.OK).body(sendPasswordResetEmailResponse);
+    }
+
+    @PostMapping("/password-reset")
+    public ResponseEntity<PasswordResetResponse> passwordReset(@RequestBody PasswordResetRequest passwordResetRequest) {
+        final PasswordResetResponse passwordResetResponse = userService.passwordReset(passwordResetRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(passwordResetResponse);
+    }
+
+    @PostMapping("/profile/image/{profileId}")
+    public ResponseEntity<IdResponse> addProfileImage(@PathVariable("profileId") Long profileId,
+                                                      @Valid @RequestBody ProfileImageUrlRequest profileImageUrlRequest) {
+
+        final IdResponse idResponse = profileService.addProfileImage(userDetailsService.loadCurrentUser(), profileId, profileImageUrlRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(idResponse);
+    }
+
+    @DeleteMapping("/profile/image/{profileId}")
+    public ResponseEntity<IdResponse> deleteProfileImage(@PathVariable("profileId") Long profileId) {
+        final IdResponse idResponse = profileService.deleteProfileImage(userDetailsService.loadCurrentUser(), profileId);
+        return ResponseEntity.status(HttpStatus.OK).body(idResponse);
+
+    }
+
+
 }

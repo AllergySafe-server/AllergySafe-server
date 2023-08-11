@@ -22,4 +22,8 @@ public interface UserService {
     void checkIfExists(Long userId);
 
     IdResponse deleteUser(User user);
+
+    SendPasswordResetEmailResponse sendPasswordResetEmail(String email);
+
+    PasswordResetResponse passwordReset(PasswordResetRequest passwordResetRequest);
 }

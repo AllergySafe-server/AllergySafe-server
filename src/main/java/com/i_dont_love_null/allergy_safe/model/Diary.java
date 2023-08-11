@@ -1,5 +1,6 @@
 package com.i_dont_love_null.allergy_safe.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -25,6 +26,7 @@ public class Diary {
 
     @ManyToOne
     @JoinColumn(name = "PROFILE_ID")
+    @JsonIgnore
     private Profile profile;
     @OneToMany(mappedBy = "diary", cascade = CascadeType.REMOVE)
     private List<IngestedFood> ingestedFoods = new ArrayList<>();
