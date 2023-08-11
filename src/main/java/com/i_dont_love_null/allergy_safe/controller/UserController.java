@@ -3,10 +3,7 @@ package com.i_dont_love_null.allergy_safe.controller;
 import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.model.Profile;
 import com.i_dont_love_null.allergy_safe.model.User;
-import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeRequest;
-import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeResponse;
-import com.i_dont_love_null.allergy_safe.security.dto.RegistrationRequest;
-import com.i_dont_love_null.allergy_safe.security.dto.RegistrationResponse;
+import com.i_dont_love_null.allergy_safe.security.dto.*;
 import com.i_dont_love_null.allergy_safe.security.service.UserDetailsServiceImpl;
 import com.i_dont_love_null.allergy_safe.security.service.UserService;
 import com.i_dont_love_null.allergy_safe.service.FriendService;
@@ -105,5 +102,13 @@ public class UserController {
     @DeleteMapping("/friend/{profileId}")
     public ResponseEntity<IdResponse> deleteFriend(@PathVariable Long profileId) {
         return ResponseEntity.status(HttpStatus.OK).body(friendService.deleteFriend(userDetailsService.loadCurrentUser(), profileId));
+    }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<IdResponse> deleteUser() {
+        User currentUser = userDetailsService.loadCurrentUser();
+        final IdResponse idResponse = userService.deleteUser(currentUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(idResponse);
     }
 }
