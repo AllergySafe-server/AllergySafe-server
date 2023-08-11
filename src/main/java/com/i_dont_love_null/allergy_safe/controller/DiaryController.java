@@ -63,5 +63,14 @@ public class DiaryController {
         return ResponseEntity.ok(idResponse);
     }
 
+    @GetMapping("/period")
+    public ResponseEntity<DiaryPeriodResponse> getDiaryPeriod(@RequestParam("profileId") Long profileId,
+                                                              @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                                                              @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        final DiaryPeriodResponse diaryPeriodResponse = diaryService.getDiaryPeriod(profileId, startDate, endDate);
+
+        return ResponseEntity.status(HttpStatus.OK).body(diaryPeriodResponse);
+    }
+
 
 }

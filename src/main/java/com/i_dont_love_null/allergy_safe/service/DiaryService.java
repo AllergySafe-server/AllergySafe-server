@@ -40,6 +40,8 @@ public class DiaryService {
 
     private final IdResponse idResponse;
 
+    private final DiaryPeriodResponse diaryPeriodResponse;
+
     public IdResponse createDiary(Long profileId, DiaryRequest diaryRequest) {
         Profile profile;
         Optional<Profile> optionalProfile = profileRepository.findById(profileId);
@@ -268,6 +270,29 @@ public class DiaryService {
         idResponse.setId(diaryId);
 
         return idResponse;
+    }
+
+    public DiaryPeriodResponse getDiaryPeriod(Long profileId, LocalDate startDate, LocalDate endDate) {
+        Optional<Profile> profileOptional = profileRepository.findById(profileId);
+        Profile profile;
+
+        if (profileOptional.isPresent()) profile = profileOptional.get();
+        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 프로필입니다.");
+
+        LocalDate date = LocalDate.now();
+        if (startDate.isAfter(date) || endDate.isAfter(date)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "미래의 날짜로는 조회할 수 없습니다.");
+        }
+
+        if (startDate.isAfter(endDate)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "시작 날짜가 종료 날짜보다 이후일 수 없습니다.");
+        }
+
+        diaryPeriodResponse.setDiaryList(diaryRepository.findByProfileIdAndDateBetween(profileId,
+                startDate, endDate));
+
+        return diaryPeriodResponse;
     }
 }
 
