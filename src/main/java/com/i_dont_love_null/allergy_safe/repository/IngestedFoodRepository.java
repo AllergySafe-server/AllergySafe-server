@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface IngestedFoodRepository extends JpaRepository<IngestedFood, Long> {
 
     void deleteByFoodId(Long foodId);
+    IngestedFood findIngestedFoodByDiaryId(Long diaryId);
 }

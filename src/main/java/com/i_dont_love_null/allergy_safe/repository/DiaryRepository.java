@@ -13,5 +13,6 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     Boolean existsByProfileIdAndDate(Long profileId, LocalDate date);
 
     Boolean existsDiariesByProfileId(Long profileId);
+    Diary findDiaryByProfileIdAndDate(Long profileId, LocalDate date);
 
 }
