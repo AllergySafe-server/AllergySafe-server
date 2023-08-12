@@ -30,6 +30,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private static final String REGISTRATION_SUCCESSFUL = "registration_successful";
+
     private static final String REGISTRATION_MAIL_SUBJECT = "registration_mail_subject";
 
     private static final String PASSWORDRESET_MAIL_SUBJECT = "passwordreset_mail_subject";
@@ -38,6 +39,7 @@ public class UserServiceImpl implements UserService {
     private final AppProperties appProperties;
 
     private final UserRepository userRepository;
+
     private final ProfileRepository profileRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -154,8 +156,8 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
     }
 
-    public User getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
+    public User getUserById(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
 
         if (user.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");

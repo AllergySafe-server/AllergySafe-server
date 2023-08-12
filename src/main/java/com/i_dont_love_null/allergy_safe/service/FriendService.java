@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-// POST /api/profile/{profile_id} with type(allergy, material, ingredient) and id
-// DELETE /api/profile/{profile_id} with type(allergy, material, ingredient) id
 
 @Slf4j
 @Service

@@ -5,7 +5,6 @@ import com.i_dont_love_null.allergy_safe.service.DiaryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 
 @Tag(name = "Diary", description = "일기장 관련 API")
 @CrossOrigin
@@ -50,11 +48,6 @@ public class DiaryController {
     public ResponseEntity<DiaryResponse> getDiaryList(@PathVariable("profileId") Long profileId, @RequestParam("date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
         final DiaryResponse diaryResponse = diaryService.getDiaryList(profileId, date);
         return ResponseEntity.status(HttpStatus.OK).body(diaryResponse);
-    }
-
-    @ExceptionHandler({DateTimeParseException.class, ConversionFailedException.class})
-    public ResponseEntity<String> handleDateTimeParseException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("날짜 형식을 'yyyy-mm-dd'으로 지켜주세요");
     }
 
     @DeleteMapping("/{diaryId}")

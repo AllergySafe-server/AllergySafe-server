@@ -3,7 +3,6 @@ package com.i_dont_love_null.allergy_safe.service;
 import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.model.*;
 import com.i_dont_love_null.allergy_safe.repository.*;
-import com.i_dont_love_null.allergy_safe.security.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,6 @@ public class ProfileService {
     private final MaterialRepository materialRepository;
     private final IngredientRepository ingredientRepository;
     private final IdResponse idResponse;
-    private final UserServiceImpl userService;
     private final ProfileListResponse profileListResponse;
 
     public IdResponse createProfile(User user, ProfileRequest profileRequest) {

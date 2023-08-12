@@ -14,6 +14,7 @@ public class SendEmailConfiguration {
 
     @Bean
     public PasswordResetResponse passwordResetResponse() {
+
         return new PasswordResetResponse();
     }
 }
