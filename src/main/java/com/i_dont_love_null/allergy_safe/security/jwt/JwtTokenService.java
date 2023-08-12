@@ -43,9 +43,6 @@ public class JwtTokenService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일인증이 완료되지 않았거나 탈퇴된 사용자입니다");
         }
 
-
-        log.info("{} has successfully logged in!", user.getEmail());
-
         return new LoginResponse(token);
     }
 }
