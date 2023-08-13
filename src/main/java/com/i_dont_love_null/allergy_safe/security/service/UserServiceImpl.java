@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
         final String appDomain = appProperties.getAppDomain();
 
         final String subject = generalMessageAccessor.getMessage(null, REGISTRATION_MAIL_SUBJECT, appName);
-        final String content = "<a href='" + appDomain + "/api/user/validate?token=" + user.getEmailToken() + "'>여기</a>를 클릭해 이메일을 인증해주세요.";
+        final String content = "<a href='" + appDomain + "/validate?token=" + user.getEmailToken() + "'>여기</a>를 클릭해 이메일을 인증해주세요.";
 
         mailRequest.setReceiverEmail(email);
         mailRequest.setSubject(subject);
@@ -191,7 +191,7 @@ public class UserServiceImpl implements UserService {
         final String appDomain = appProperties.getAppDomain();
 
         final String subject = generalMessageAccessor.getMessage(null, PASSWORDRESET_MAIL_SUBJECT, appName);
-        final String content = "<a href='" + appDomain + "/api/user/validate?email=" + user.getEmailToken() + "'>여기</a>를 클릭해 이메일을 인증해주세요.";
+        final String content = "<a href='" + appDomain + "/password-reset?token=" + user.getEmailToken() + "'>여기</a>를 클릭해 비밀번호를 재설정 해주세요.";
 
         mailRequest.setReceiverEmail(email);
         mailRequest.setSubject(subject);
