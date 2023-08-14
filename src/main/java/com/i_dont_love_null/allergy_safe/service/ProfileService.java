@@ -1,12 +1,8 @@
 package com.i_dont_love_null.allergy_safe.service;
 
-import com.i_dont_love_null.allergy_safe.dto.IdResponse;
-import com.i_dont_love_null.allergy_safe.dto.ProfileElementRequest;
-import com.i_dont_love_null.allergy_safe.dto.ProfileListResponse;
-import com.i_dont_love_null.allergy_safe.dto.ProfileRequest;
+import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.model.*;
 import com.i_dont_love_null.allergy_safe.repository.*;
-import com.i_dont_love_null.allergy_safe.security.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -28,7 +24,6 @@ public class ProfileService {
     private final MaterialRepository materialRepository;
     private final IngredientRepository ingredientRepository;
     private final IdResponse idResponse;
-    private final UserServiceImpl userService;
     private final ProfileListResponse profileListResponse;
 
     public IdResponse createProfile(User user, ProfileRequest profileRequest) {
@@ -247,13 +242,45 @@ public class ProfileService {
         return profile;
     }
 
-    public Profile getProfileById(Long id) {
-        Optional<Profile> profileOptional = profileRepository.findById(id);
+    public Profile getProfileById(Long profileId) {
+        Optional<Profile> profileOptional = profileRepository.findById(profileId);
 
         if (profileOptional.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 프로필입니다.");
         }
 
         return profileOptional.get();
+    }
+
+    public IdResponse addProfileImage(User user, Long profileId, ProfileImageUrlRequest profileImageUrlRequest) {
+        Profile profile = getProfileById(profileId);
+
+        checkIfFamily(user, profileId);
+
+        profile = profile.toBuilder()
+                .imageUrl(profileImageUrlRequest.getImageUrl())
+                .build();
+
+        profileRepository.save(profile);
+
+        idResponse.setId(profileId);
+
+        return idResponse;
+    }
+
+    public IdResponse deleteProfileImage(User user, Long profileId) {
+        Profile profile = getProfileById(profileId);
+
+        checkIfFamily(user, profileId);
+
+        profile = profile.toBuilder()
+                .imageUrl(null)
+                .build();
+        profileRepository.save(profile);
+        idResponse.setId(profileId);
+
+        return idResponse;
+
+
     }
 }

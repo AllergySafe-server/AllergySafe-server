@@ -37,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         final String requestURI = req.getRequestURI();
 
-        if (new ArrayList<>(Arrays.asList(SecurityConstants.URI_WHITE_LIST)).contains(requestURI)) {
+        if (new ArrayList<>(Arrays.asList(SecurityConstants.GET_URI_WHITE_LIST)).contains(requestURI)) {
             chain.doFilter(req, res);
             return;
         }
@@ -65,7 +65,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 final UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-                log.info("Authentication successful. Logged in email : {} ", email);
                 securityContext.setAuthentication(authentication);
             }
         }

@@ -16,5 +16,4 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     Diary findDiaryByProfileIdAndDate(Long profileId, LocalDate date);
 
     List<Diary> findAllByProfileIdAndDateBetweenOrderByDateDesc(Long profileId, LocalDate startDate, LocalDate endDate);
-
 }
