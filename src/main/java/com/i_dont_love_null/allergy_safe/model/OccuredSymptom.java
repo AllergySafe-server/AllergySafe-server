@@ -16,7 +16,7 @@ public class OccuredSymptom {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "OCCUREDSYMTOM_ID")
+    @Column(name = "OCCUREDSYMPTOM_ID")
     private Long id;
 
     private LocalDateTime datetime;

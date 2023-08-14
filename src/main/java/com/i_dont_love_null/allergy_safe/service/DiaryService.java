@@ -105,12 +105,14 @@ public class DiaryService {
         List<TakenMedicine> takenMedicines = diary.getTakenMedicines();
         List<OccuredSymptom> occuredSymptoms = diary.getOccuredSymptoms();
 
+        LocalDate diaryDate = diary.getDate();
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime datetime = diaryElementCreateRequest.getDateTime();
 
-        LocalDateTime minimumDateTime = datetime.withHour(0).withMinute(0).withSecond(0);
+        LocalDateTime minimumDateTime = diaryDate.atStartOfDay();
+        LocalDateTime maximumDateTime = diaryDate.plusDays(1).atStartOfDay();
 
-        if (datetime.isBefore(minimumDateTime)) {
+        if (datetime.isBefore(minimumDateTime) || !datetime.isBefore(maximumDateTime)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "선택한 일자의 정보만 등록할 수 있습니다.");
         }
 
