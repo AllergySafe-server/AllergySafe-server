@@ -8,5 +8,6 @@ import java.util.List;
 public interface IngestedFoodRepository extends JpaRepository<IngestedFood, Long> {
 
     void deleteByFoodId(Long foodId);
+
     List<IngestedFood> findAllByDiaryId(Long diaryId);
 }

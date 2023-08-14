@@ -6,5 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface OccuredSymptomRepository extends JpaRepository<OccuredSymptom, Long> {
 
     void deleteBySymptomId(Long symptomId);
+
     Boolean existsByDiaryId(Long id);
 }

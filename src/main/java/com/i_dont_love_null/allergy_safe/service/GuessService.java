@@ -18,27 +18,26 @@ import java.util.*;
 @AllArgsConstructor
 public class GuessService {
     private final GuessResponse guessResponse;
-
-    public GuessResponse guessResponse() {
-        return guessResponse;
-    }
-
     private final ProfileRepository profileRepository;
     private final DiaryRepository diaryRepository;
     private final IngestedFoodRepository ingestedFoodRepository;
     private final FoodRepository foodRepository;
     private final EntityListToStringList entityListToStringList;
     private final OccuredSymptomRepository occuredSymptomRepository;
-
     private final AllergyRepository allergyRepository;
     private final MaterialRepository materialRepository;
+    private final TakenMedicineRepository takenMedicineRepository;
+    private final MedicineRepository medicineRepository;
     private final IngredientRepository ingredientRepository;
 
-    public GuessResponse guessing(Long profileId, LocalDate startDate, LocalDate endDate) {
+    public GuessResponse guessResponse() {
+        return guessResponse;
+    }
+
+    public GuessResponse guessFood(Long profileId, LocalDate startDate, LocalDate endDate) {
         Profile profile;
         Optional<Profile> optionalProfile = profileRepository.findById(profileId);
 
-        //추가 요망 : 다이어리에 겪은 증상이 없는 경우의 예외
         if (optionalProfile.isPresent()) {
             profile = optionalProfile.get();
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 프로필입니다.");
@@ -58,7 +57,7 @@ public class GuessService {
         //다이어리id와 대응되는 먹은 음식의 foodId를 모두 담는 배열 설정
         List<Long> foodIdList1 = new ArrayList<>();
         for (Long diaryId : diaryIdList1) {
-            for (IngestedFood ingestedFood: ingestedFoodRepository.findAllByDiaryId(diaryId)){
+            for (IngestedFood ingestedFood : ingestedFoodRepository.findAllByDiaryId(diaryId)) {
                 foodIdList1.add(ingestedFood.getFood().getId());
             }
         }
@@ -84,7 +83,7 @@ public class GuessService {
         //다이어리id와 대응되는 먹은 음식의 foodId를 모두 담는 배열 설정
         List<Long> foodIdList2 = new ArrayList<>();
         for (Long diaryId : diaryIdList2) {
-            for (IngestedFood ingestedFood: ingestedFoodRepository.findAllByDiaryId(diaryId)){
+            for (IngestedFood ingestedFood : ingestedFoodRepository.findAllByDiaryId(diaryId)) {
                 foodIdList2.add(ingestedFood.getFood().getId());
             }
         }
@@ -238,7 +237,7 @@ public class GuessService {
                         card.setElementId(ingestedFood.getFood().getId());
                         Optional<Food> optionalFood = foodRepository.findById(ingestedFood.getFood().getId());
                         if (optionalFood.isPresent()) card.setName(optionalFood.get().getName());
-                        card.setDate(ingestedFood.getDatetime());
+                        card.setDateTime(ingestedFood.getDatetime());
                         List<Symptom> symptoms = new ArrayList<>();
                         Diary tomorrowDiary = diaryRepository.findDiaryByProfileIdAndDate(profileId, diary.getDate().plusDays(1));
                         if (Objects.nonNull(tomorrowDiary)) {
@@ -270,45 +269,179 @@ public class GuessService {
         guessResponse.setEndDate(endDate);
         guessResponse.setGuessedData(guessedDataList);
         return guessResponse;
-
-
-//        //materialNameList1에 담긴 String 중 한 번만 먹은 원재료를 제거
-//        List<Map.Entry<String, Long>> twoOrMoreMaterialList1 = materialNameList2.stream()
-//                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-//                .entrySet()
-//                .stream()
-//                .filter(element -> element.getValue() > 1)
-//                .toList();
-//
-//        //materialNameList2에 담긴 String 중 한 번만 먹은 원재료를 제거
-//        List<Map.Entry<String, Long>> twoOrMoreMaterialList2 = materialNameList2.stream()
-//                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
-//                .entrySet()
-//                .stream()
-//                .filter(element -> element.getValue() > 1)
-//                .toList();
-//
-//        //( twoOrMoreMaterialList2 / twoOrMoreMaterialList1 )인 확률을 백분율로 계산
-//        List<Map.Entry<String, Long>> percentOfAllergy = new ArrayList<>();
-//        for (Map.Entry<String, Long> twoOrMoreMaterials1 : twoOrMoreMaterialList2) {
-//            if (twoOrMoreMaterialList2.)
-//        }
-
-//        for (Map.Entry<String, Long> twoOrMoreMaterials2 : twoOrMoreMaterialList2) {
-//            for (Map.Entry<String, Long> twoOrMoreMaterials1 : twoOrMoreMaterialList1){
-//                if(twoOrMoreMaterials2.getKey().equals(twoOrMoreMaterials1.getKey())){
-//                    Map.Entry<String, Long> nameAndPercent = new
-//                    percentOfAllergy
-//                    percentOfAllergy.add(Entry<twoOrMoreMaterials2.getKey(),(twoOrMoreMaterials2.getValue()/twoOrMoreMaterials1.getValue())*100>);
-//                }
-//            }
-//        }
-//        percentOfAllergy.add();
-
-
-//        return guessFoodResponse;
     }
 
+    public GuessResponse guessMedicine(Long profileId, LocalDate startDate, LocalDate endDate) {
+        Profile profile;
+        Optional<Profile> optionalProfile = profileRepository.findById(profileId);
+
+        if (optionalProfile.isPresent()) {
+            profile = optionalProfile.get();
+        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 프로필입니다.");
+
+        if (startDate.isAfter(endDate)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "시작 날짜가 끝 날짜보다 앞서야합니다.");
+        }
+        if (!diaryRepository.existsDiariesByProfileId(profileId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 프로필에 등록된 다이어리가 없습니다.");
+        }
+
+        //프로필 아이디, 날짜 범위와 대응되는 다이어리id를 모두 담는 배열 설정
+        List<Long> diaryIdList1 = new ArrayList<>();
+        for (LocalDate tempDate = startDate; tempDate.isBefore(endDate) || tempDate.isEqual(endDate); tempDate = tempDate.plusDays(1)) {
+            diaryIdList1.add(diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate).getId());
+        }
+        //다이어리id와 대응되는 복용한 약의 medicineId를 모두 담는 배열 설정
+        List<Long> medicineIdList1 = new ArrayList<>();
+        for (Long diaryId : diaryIdList1) {
+            for (TakenMedicine takenMedicine : takenMedicineRepository.findAllByDiaryId(diaryId)) {
+                medicineIdList1.add(takenMedicine.getMedicine().getId());
+            }
+        }
+        //medicineId와 대응되는 ingredient List의 name을 모두 담는 배열 설정
+        List<String> ingredientNameList1 = new ArrayList<>();
+        for (Long medicineId : medicineIdList1) {
+            Optional<Medicine> optionalMedicine = medicineRepository.findById(medicineId);
+            if (optionalMedicine.isPresent()) {
+                ingredientNameList1.addAll(entityListToStringList.convertWithName(optionalMedicine.get().getIngredients()));
+            }
+        }
+
+
+        //프로필 아이디, 날짜 범위와 대응되며, 겪은 증상이 있는 다이어리 id를 모두 담은 배열 설정
+        List<Long> diaryIdList2 = new ArrayList<>();
+        for (Long tempId : diaryIdList1) {
+            if (occuredSymptomRepository.existsByDiaryId(tempId)) {
+                diaryIdList2.add(tempId);
+            }
+        }
+        //다이어리id와 대응되는 복용한 약의 medicineId를 모두 담는 배열 설정
+        List<Long> medicineIdList2 = new ArrayList<>();
+        for (Long diaryId : diaryIdList2) {
+            for (TakenMedicine takenMedicine : takenMedicineRepository.findAllByDiaryId(diaryId)) {
+                medicineIdList2.add(takenMedicine.getMedicine().getId());
+            }
+        }
+        //medicineId와 대응되는 ingredient List의 name을 모두 담는 배열 설정
+        List<String> ingredientNameList2 = new ArrayList<>();
+        for (Long medicineId : medicineIdList2) {
+            Optional<Medicine> optionalMedicine = medicineRepository.findById(medicineId);
+            if (optionalMedicine.isPresent()) {
+                ingredientNameList2.addAll(entityListToStringList.convertWithName(optionalMedicine.get().getIngredients()));
+            }
+        }
+
+        // medicine 대상으로 확률 계산
+        List<String> keysIngredient = new ArrayList<>(new HashSet<>(ingredientNameList1));
+        Map<String, Integer> totalCountMapIngredient = new HashMap<String, Integer>();
+        Map<String, Integer> occurCountMapIngredient = new HashMap<String, Integer>();
+        Map<String, Integer> percentCountMap = new HashMap<String, Integer>();
+
+        for (String key : keysIngredient) {
+            for (String ingredientName1 : ingredientNameList1) {
+                if (ingredientName1.equals(key)) {
+                    if (!totalCountMapIngredient.containsKey(key)) totalCountMapIngredient.put(key, 0);
+                    totalCountMapIngredient.put(key, totalCountMapIngredient.get(key) + 1);
+                }
+            }
+            for (String ingredientName2 : ingredientNameList2) {
+                if (ingredientName2.equals(key)) {
+                    if (!occurCountMapIngredient.containsKey(key)) occurCountMapIngredient.put(key, 0);
+                    occurCountMapIngredient.put(key, occurCountMapIngredient.get(key) + 1);
+                }
+            }
+        }
+
+        for (String key2 : keysIngredient) {
+            if (totalCountMapIngredient.get(key2) == 1) totalCountMapIngredient.remove(key2);
+            if (occurCountMapIngredient.containsKey(key2) && occurCountMapIngredient.get(key2) == 1)
+                occurCountMapIngredient.remove(key2);
+        }
+
+        for (String key3 : occurCountMapIngredient.keySet()) {
+            if (!percentCountMap.containsKey(key3)) percentCountMap.put(key3, 0);
+            percentCountMap.put(key3, (int) Math.round(100.0 * ((double) occurCountMapIngredient.get(key3) / totalCountMapIngredient.get(key3))));
+        }
+
+        // percentCountMapIngredient의 키 목록을 value 값 크기 순으로 내림차순 정렬
+        List<String> percentCountMapKeys = new ArrayList<>(percentCountMap.keySet());
+        Collections.sort(percentCountMapKeys, (v1, v2) -> (percentCountMap.get(v2).compareTo(percentCountMap.get(v1))));
+
+        // guessedData 구성
+        List<GuessedData> guessedDataList = new ArrayList<>();
+        for (int i = 0; i < percentCountMapKeys.size(); i++) {
+            if (guessedDataList.size() == 4) break;
+            String name = percentCountMapKeys.get(i);
+            int percent = percentCountMap.get(name);
+            Ingredient ingredient = ingredientRepository.findByName(name);
+            String type = "ingredient";
+            int totalCount = 0;
+            int occuredCount = 0;
+            Long elementId;
+            List<Long> medicineIdList = new ArrayList<>();
+
+            totalCount = totalCountMapIngredient.get(name);
+            occuredCount = occurCountMapIngredient.get(name);
+            elementId = ingredient.getId();
+
+            for (Long diaryId : diaryIdList1) {
+                Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
+                if (diaryOptional.isPresent()) {
+                    List<TakenMedicine> takenMedicines = diaryOptional.get().getTakenMedicines();
+                    for (TakenMedicine takenMedicine : takenMedicines) {
+                        List<Ingredient> ingredients = takenMedicine.getMedicine().getIngredients();
+                        for (Ingredient ingredient1 : ingredients) {
+                            if (ingredient1.getId().equals(elementId))
+                                medicineIdList.add(takenMedicine.getMedicine().getId());
+                        }
+                    }
+                }
+            }
+            List<Card> cards = new ArrayList<>();
+            List<Diary> diaries = diaryRepository.findAllByProfileIdAndDateBetweenOrderByDateDesc(profileId, startDate, endDate);
+            for (Diary diary : diaries) {
+                if (cards.size() == 3) break;
+                List<TakenMedicine> takenMedicines = diary.getTakenMedicines();
+                for (TakenMedicine takenMedicine : takenMedicines) {
+                    if (medicineIdList.contains(takenMedicine.getMedicine().getId())) {
+                        Card card = new Card();
+                        card.setType(CardElementType.MEDICINE);
+                        card.setElementId(takenMedicine.getMedicine().getId());
+                        Optional<Medicine> optionalMedicine = medicineRepository.findById(takenMedicine.getMedicine().getId());
+                        if (optionalMedicine.isPresent()) card.setName(optionalMedicine.get().getName());
+                        card.setDateTime(takenMedicine.getDatetime());
+                        List<Symptom> symptoms = new ArrayList<>();
+                        Diary tomorrowDiary = diaryRepository.findDiaryByProfileIdAndDate(profileId, diary.getDate().plusDays(1));
+                        if (Objects.nonNull(tomorrowDiary)) {
+                            for (OccuredSymptom occuredSymptom : tomorrowDiary.getOccuredSymptoms()) {
+                                symptoms.add(occuredSymptom.getSymptom());
+                            }
+                        }
+                        for (OccuredSymptom occuredSymptom : diary.getOccuredSymptoms()) {
+                            symptoms.add(occuredSymptom.getSymptom());
+                        }
+                        card.setSymptoms(symptoms);
+                        cards.add(card);
+                    }
+                }
+            }
+            GuessedData guessedData = new GuessedData();
+            guessedData.setType(GuessedType.from(type));
+            guessedData.setElementId(elementId);
+            guessedData.setName(name);
+            guessedData.setTotalCount(totalCount);
+            guessedData.setTotalSymptomOccuredCount(occuredCount);
+            guessedData.setPercentage(percent);
+            guessedData.setCards(cards);
+            guessedDataList.add(guessedData);
+        }
+        guessResponse.setProfileId(profileId);
+        guessResponse.setName(profile.getName());
+        guessResponse.setStartDate(startDate);
+        guessResponse.setEndDate(endDate);
+        guessResponse.setGuessedData(guessedDataList);
+        return guessResponse;
+    }
 
 }
 

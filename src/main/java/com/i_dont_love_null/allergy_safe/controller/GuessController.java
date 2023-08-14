@@ -20,10 +20,16 @@ import java.time.LocalDate;
 public class GuessController {
     private final GuessService guessService;
 
-    @GetMapping("/{profileId}")
+    @GetMapping("/food/{profileId}")
     @ResponseBody
     public ResponseEntity<GuessResponse> getFoodById(@PathVariable("profileId") Long profileId, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
-        return ResponseEntity.status(HttpStatus.OK).body(guessService.guessing(profileId, startDate, endDate));
+        return ResponseEntity.status(HttpStatus.OK).body(guessService.guessFood(profileId, startDate, endDate));
+    }
+
+    @GetMapping("/medicine/{profileId}")
+    @ResponseBody
+    public ResponseEntity<GuessResponse> getMedicineById(@PathVariable("profileId") Long profileId, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        return ResponseEntity.status(HttpStatus.OK).body(guessService.guessMedicine(profileId, startDate, endDate));
     }
 
 }
