@@ -5,19 +5,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
-
-
 @Getter
 @Setter
 @NoArgsConstructor
 @Service
-public class GuessFoodResponse {
-    private Long profileId;
+public class GuessedData {
+    private GuessedType type;
+    private Long elementId;
     private String name;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private List<GuessedFoodData> guessedData;
+    private Integer totalIngestedCount;
+    private Integer totalSymptomOccuredCount;
+
+    private Integer percentage;
+    private List<Card> cards;
 
 }

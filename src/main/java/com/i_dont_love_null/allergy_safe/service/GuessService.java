@@ -1,9 +1,6 @@
 package com.i_dont_love_null.allergy_safe.service;
 
-import com.i_dont_love_null.allergy_safe.dto.FoodCard;
-import com.i_dont_love_null.allergy_safe.dto.GuessFoodResponse;
-import com.i_dont_love_null.allergy_safe.dto.GuessedFoodData;
-import com.i_dont_love_null.allergy_safe.dto.GuessedFoodType;
+import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.model.*;
 import com.i_dont_love_null.allergy_safe.repository.*;
 import com.i_dont_love_null.allergy_safe.utils.EntityListToStringList;
@@ -20,10 +17,10 @@ import java.util.*;
 @Service
 @AllArgsConstructor
 public class GuessService {
-    private final GuessFoodResponse guessFoodResponse;
+    private final GuessResponse guessResponse;
 
-    public GuessFoodResponse guessResponse() {
-        return guessFoodResponse;
+    public GuessResponse guessResponse() {
+        return guessResponse;
     }
 
     private final ProfileRepository profileRepository;
@@ -37,7 +34,7 @@ public class GuessService {
     private final MaterialRepository materialRepository;
     private final IngredientRepository ingredientRepository;
 
-    public GuessFoodResponse guessing(Long profileId, LocalDate startDate, LocalDate endDate) {
+    public GuessResponse guessing(Long profileId, LocalDate startDate, LocalDate endDate) {
         Profile profile;
         Optional<Profile> optionalProfile = profileRepository.findById(profileId);
 
@@ -175,10 +172,10 @@ public class GuessService {
         List<String> percentCountMapKeys = new ArrayList<>(percentCountMap.keySet());
         Collections.sort(percentCountMapKeys, (v1, v2) -> (percentCountMap.get(v2).compareTo(percentCountMap.get(v1))));
 
-        List<GuessedFoodData> guessedFoodDataList = new ArrayList<>();
+        List<GuessedData> guessedDataList = new ArrayList<>();
         // guessedData 구성
         for (int i = 0; i < percentCountMapKeys.size(); i++) {
-            if (guessedFoodDataList.size() == 4) break;
+            if (guessedDataList.size() == 4) break;
             String name = percentCountMapKeys.get(i);
             int percent = percentCountMap.get(name);
             Allergy allergy = allergyRepository.findByName(name);
@@ -229,18 +226,19 @@ public class GuessService {
                     }
                 }
             }
-            List<FoodCard> foodCards = new ArrayList<>();
+            List<Card> cards = new ArrayList<>();
             List<Diary> diaries = diaryRepository.findAllByProfileIdAndDateBetweenOrderByDateDesc(profileId, startDate, endDate);
             for (Diary diary : diaries) {
-                if (foodCards.size() == 3) break;
+                if (cards.size() == 3) break;
                 List<IngestedFood> ingestedFoods = diary.getIngestedFoods();
                 for (IngestedFood ingestedFood : ingestedFoods) {
                     if (foodIdList.contains(ingestedFood.getFood().getId())) {
-                        FoodCard foodCard = new FoodCard();
-                        foodCard.setFoodId(ingestedFood.getFood().getId());
+                        Card card = new Card();
+                        card.setType(CardElementType.FOOD);
+                        card.setElementId(ingestedFood.getFood().getId());
                         Optional<Food> optionalFood = foodRepository.findById(ingestedFood.getFood().getId());
-                        if (optionalFood.isPresent()) foodCard.setFoodName(optionalFood.get().getName());
-                        foodCard.setDate(ingestedFood.getDatetime());
+                        if (optionalFood.isPresent()) card.setName(optionalFood.get().getName());
+                        card.setDate(ingestedFood.getDatetime());
                         List<Symptom> symptoms = new ArrayList<>();
                         Diary tomorrowDiary = diaryRepository.findDiaryByProfileIdAndDate(profileId, diary.getDate().plusDays(1));
                         if (Objects.nonNull(tomorrowDiary)) {
@@ -251,27 +249,27 @@ public class GuessService {
                         for (OccuredSymptom occuredSymptom : diary.getOccuredSymptoms()) {
                             symptoms.add(occuredSymptom.getSymptom());
                         }
-                        foodCard.setSymptoms(symptoms);
-                        foodCards.add(foodCard);
+                        card.setSymptoms(symptoms);
+                        cards.add(card);
                     }
                 }
             }
-            GuessedFoodData guessedFoodData = new GuessedFoodData();
-            guessedFoodData.setType(GuessedFoodType.from(type));
-            guessedFoodData.setElementId(elementId);
-            guessedFoodData.setName(name);
-            guessedFoodData.setTotalIngestedCount(totalCount);
-            guessedFoodData.setTotalSymptomOccuredCount(occuredCount);
-            guessedFoodData.setPercentage(percent);
-            guessedFoodData.setFoodCards(foodCards);
-            guessedFoodDataList.add(guessedFoodData);
+            GuessedData guessedData = new GuessedData();
+            guessedData.setType(GuessedType.from(type));
+            guessedData.setElementId(elementId);
+            guessedData.setName(name);
+            guessedData.setTotalIngestedCount(totalCount);
+            guessedData.setTotalSymptomOccuredCount(occuredCount);
+            guessedData.setPercentage(percent);
+            guessedData.setCards(cards);
+            guessedDataList.add(guessedData);
         }
-        guessFoodResponse.setProfileId(profileId);
-        guessFoodResponse.setName(profile.getName());
-        guessFoodResponse.setStartDate(startDate);
-        guessFoodResponse.setEndDate(endDate);
-        guessFoodResponse.setGuessedData(guessedFoodDataList);
-        return guessFoodResponse;
+        guessResponse.setProfileId(profileId);
+        guessResponse.setName(profile.getName());
+        guessResponse.setStartDate(startDate);
+        guessResponse.setEndDate(endDate);
+        guessResponse.setGuessedData(guessedDataList);
+        return guessResponse;
 
 
 //        //materialNameList1에 담긴 String 중 한 번만 먹은 원재료를 제거

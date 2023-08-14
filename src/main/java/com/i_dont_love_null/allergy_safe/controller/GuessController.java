@@ -1,6 +1,6 @@
 package com.i_dont_love_null.allergy_safe.controller;
 
-import com.i_dont_love_null.allergy_safe.dto.GuessFoodResponse;
+import com.i_dont_love_null.allergy_safe.dto.GuessResponse;
 import com.i_dont_love_null.allergy_safe.service.GuessService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class GuessController {
 
     @GetMapping("/{profileId}")
     @ResponseBody
-    public ResponseEntity<GuessFoodResponse> getFoodById(@PathVariable("profileId") Long profileId, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+    public ResponseEntity<GuessResponse> getFoodById(@PathVariable("profileId") Long profileId, @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate, @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
         return ResponseEntity.status(HttpStatus.OK).body(guessService.guessing(profileId, startDate, endDate));
     }
 

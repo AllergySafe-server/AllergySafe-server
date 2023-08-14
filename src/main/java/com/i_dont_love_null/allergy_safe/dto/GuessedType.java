@@ -5,15 +5,16 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum GuessedFoodType {
+public enum GuessedType {
     ALLERGY("allergy"),
-    MATERIAL("material");
+    MATERIAL("material"),
+    INGREDIENT("ingredient");
 
     private final String value;
 
     @JsonCreator
-    public static GuessedFoodType from(String value) {
-        for (GuessedFoodType elementType : GuessedFoodType.values()) {
+    public static GuessedType from(String value) {
+        for (GuessedType elementType : GuessedType.values()) {
             if (elementType.getValue().equals(value)) {
                 return elementType;
             }

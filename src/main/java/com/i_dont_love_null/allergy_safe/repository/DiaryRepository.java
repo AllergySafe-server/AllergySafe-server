@@ -15,4 +15,6 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
     Boolean existsDiariesByProfileId(Long profileId);
     Diary findDiaryByProfileIdAndDate(Long profileId, LocalDate date);
 
+    List<Diary> findAllByProfileIdAndDateBetweenOrderByDateDesc(Long profileId, LocalDate startDate, LocalDate endDate);
+
 }
