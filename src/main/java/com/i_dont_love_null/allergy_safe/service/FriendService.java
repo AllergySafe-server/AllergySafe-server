@@ -6,6 +6,7 @@ import com.i_dont_love_null.allergy_safe.model.Friend;
 import com.i_dont_love_null.allergy_safe.model.Profile;
 import com.i_dont_love_null.allergy_safe.model.User;
 import com.i_dont_love_null.allergy_safe.repository.FriendRepository;
+import com.i_dont_love_null.allergy_safe.repository.ProfileRepository;
 import com.i_dont_love_null.allergy_safe.repository.UserRepository;
 import com.i_dont_love_null.allergy_safe.security.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
@@ -19,8 +20,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-// POST /api/profile/{profile_id} with type(allergy, material, ingredient) and id
-// DELETE /api/profile/{profile_id} with type(allergy, material, ingredient) id
 
 @Slf4j
 @Service
@@ -28,20 +27,29 @@ import java.util.Optional;
 public class FriendService {
     private final FriendRepository friendRepository;
 
+    private final ProfileRepository profileRepository;
     private final UserRepository userRepository;
     private final UserServiceImpl userService;
     private final ProfileService profileService;
     private final IdResponse idResponse;
 
     public IdResponse createFriend(User user, FriendRequest friendRequest) {
-        if (Objects.equals(user.getId(), friendRequest.getUserId()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신은 친구로 추가할 수 없습니다.");
-        userService.checkIfExists(friendRequest.getUserId());
+        Optional<Profile> profileOptional = profileRepository.findById(friendRequest.getProfileId());
+        Profile profile;
 
-        if (isMyFriend(user, friendRequest.getUserId()))
+        if (profileOptional.isPresent()) profile = profileOptional.get();
+        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 프로필입니다.");
+
+        Long userId = profile.getUser().getId();
+
+        if (Objects.equals(user.getId(), userId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "자기 자신은 친구로 추가할 수 없습니다.");
+        userService.checkIfExists(userId);
+
+        if (isMyFriend(user, userId))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 등록된 친구입니다.");
 
-        Friend newFriend = Friend.builder().userId(friendRequest.getUserId()).build();
+        Friend newFriend = Friend.builder().userId(userId).build();
         friendRepository.save(newFriend);
         List<Friend> newFriends = user.getFriends();
         newFriends.add(newFriend);

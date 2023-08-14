@@ -17,8 +17,8 @@ import java.util.Optional;
 public class MedicineService {
     private final MedicineRepository medicineRepository;
 
-    public MedicineResponse getMedicineResponseById(Long id) {
-        Optional<Medicine> medicine = medicineRepository.findById(id);
+    public MedicineResponse getMedicineResponseById(Long medicineId) {
+        Optional<Medicine> medicine = medicineRepository.findById(medicineId);
 
         if (medicine.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 의약품입니다.");
@@ -27,8 +27,8 @@ public class MedicineService {
         return medicine.get().toMedicineResponse();
     }
 
-    public Medicine getMedicineById(Long id) {
-        Optional<Medicine> medicine = medicineRepository.findById(id);
+    public Medicine getMedicineById(Long medicineId) {
+        Optional<Medicine> medicine = medicineRepository.findById(medicineId);
 
         if (medicine.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 의약품입니다.");

@@ -48,4 +48,7 @@ public class Profile {
     @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE)
     @JsonIgnore
     private List<Diary> diaries;
+
+
+    private String imageUrl;
 }

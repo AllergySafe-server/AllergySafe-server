@@ -123,10 +123,18 @@ public class PublicAPIService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
         String json = result.getBody();
 
-        Gson gson = new Gson();
-        Map<String, Object> jsonData = gson.fromJson(json, Map.class);
-        Map<String, Object> c005Data = (Map<String, Object>) jsonData.get("C005");
-        List<Map<String, Object>> rowsData = (List<Map<String, Object>>) c005Data.get("row");
+        Map<String, Object> jsonData;
+        Map<String, Object> c005Data;
+        List<Map<String, Object>> rowsData;
+
+        try {
+            Gson gson = new Gson();
+            jsonData = gson.fromJson(json, Map.class);
+            c005Data = (Map<String, Object>) jsonData.get("C005");
+            rowsData = (List<Map<String, Object>>) c005Data.get("row");
+        } catch (Exception ignored) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
+        }
 
         if (Objects.isNull(rowsData))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
@@ -191,20 +199,33 @@ public class PublicAPIService {
         materials = new ArrayList<>(new HashSet<>(Arrays.asList(array)));
 
         allergiesString = allergiesString.replace("함유", "");
+        allergiesString = allergiesString.replace("포함", "");
         allergiesString = allergiesString.replace("알수없음", "");
         allergiesString = allergiesString.replace(" ", "");
         List<String> array2 = new ArrayList<>(List.of(allergiesString.split(",")));
         if (array2.size() == 1 && array2.get(0).equals("")) array2.clear();
+        List<String> array3 = new ArrayList<>();
 
         List<Allergy> knownAllergies = allergyRepository.findAll();
+        for (String foundAllergy: array2) {
+            boolean isSimilar = false;
+            for (Allergy knownAllergy: knownAllergies) {
+                if (foundAllergy.contains(knownAllergy.getName())) {
+                    isSimilar = true;
+                    break;
+                }
+            }
+            if (!isSimilar) array3.add(foundAllergy);
+        }
+
         for (String material : materials) {
             for (Allergy allergy : knownAllergies) {
                 if (material.contains(allergy.getName())) {
-                    array2.add(allergy.getName());
+                    array3.add(allergy.getName());
                 }
             }
         }
-        allergies = new ArrayList<>(new HashSet<>(array2));
+        allergies = new ArrayList<>(new HashSet<>(array3));
 
         foodFromApiResponse.setName(name);
         foodFromApiResponse.setMaterials(materials);
@@ -243,36 +264,41 @@ public class PublicAPIService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "의약품 정보를 불러올 수 없습니다.");
         }
 
-        String name = item.get("ITEM_NAME").getAsString();
-        String mainIngredientsString = item.get("MAIN_ITEM_INGR").getAsString();
-        String ingredientsString = item.get("INGR_NAME").getAsString();
+        try {
 
-        mainIngredientsString = mainIngredientsString.replaceAll("\\[.*?\\]", "");
-        mainIngredientsString = mainIngredientsString.replace('·', '|');
-        String[] parts = mainIngredientsString.split("\\s+");
-        if (parts.length == 3) {
-            mainIngredientsString = String.join(" ", List.of(parts).subList(0, parts.length - 2));
+            String name = item.get("ITEM_NAME").getAsString();
+            String mainIngredientsString = item.get("MAIN_ITEM_INGR").getAsString();
+            String ingredientsString = item.get("INGR_NAME").getAsString();
+
+            mainIngredientsString = mainIngredientsString.replaceAll("\\[.*?\\]", "");
+            mainIngredientsString = mainIngredientsString.replace('·', '|');
+            String[] parts = mainIngredientsString.split("\\s+");
+            if (parts.length == 3) {
+                mainIngredientsString = String.join(" ", List.of(parts).subList(0, parts.length - 2));
+            }
+            mainIngredientsString = mainIngredientsString.replace(" ", "");
+            ArrayList<String> list = new ArrayList<>(List.of(mainIngredientsString.split("\\|")));
+
+            ingredientsString = ingredientsString.replaceAll("\\[.*?\\]", "");
+            ingredientsString = ingredientsString.replace('·', '|');
+            String[] parts2 = ingredientsString.split("\\s+");
+            if (parts2.length == 3) {
+                ingredientsString = String.join(" ", List.of(parts2).subList(0, parts2.length - 2));
+            }
+            ingredientsString = ingredientsString.replace(" ", "");
+            ArrayList<String> list2 = new ArrayList<>(List.of(ingredientsString.split("\\|")));
+
+            Set<String> set = new HashSet<>(list);
+            set.addAll(list2);
+
+            List<String> ingredients = new ArrayList<>(set);
+
+            medicineFromApiResponse.setName(name);
+            medicineFromApiResponse.setIngredients(ingredients);
+
+            return medicineFromApiResponse;
+        } catch (Exception ignored) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "의약품 정보를 불러올 수 없습니다.");
         }
-        mainIngredientsString = mainIngredientsString.replace(" ", "");
-        ArrayList<String> list = new ArrayList<>(List.of(mainIngredientsString.split("\\|")));
-
-        ingredientsString = ingredientsString.replaceAll("\\[.*?\\]", "");
-        ingredientsString = ingredientsString.replace('·', '|');
-        String[] parts2 = ingredientsString.split("\\s+");
-        if (parts2.length == 3) {
-            ingredientsString = String.join(" ", List.of(parts2).subList(0, parts2.length - 2));
-        }
-        ingredientsString = ingredientsString.replace(" ", "");
-        ArrayList<String> list2 = new ArrayList<>(List.of(ingredientsString.split("\\|")));
-
-        Set<String> set = new HashSet<>(list);
-        set.addAll(list2);
-
-        List<String> ingredients = new ArrayList<>(set);
-
-        medicineFromApiResponse.setName(name);
-        medicineFromApiResponse.setIngredients(ingredients);
-
-        return medicineFromApiResponse;
     }
 }
