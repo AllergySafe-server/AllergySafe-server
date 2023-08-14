@@ -14,7 +14,7 @@ public class GuessedData {
     private GuessedType type;
     private Long elementId;
     private String name;
-    private Integer totalIngestedCount;
+    private Integer totalCount;
     private Integer totalSymptomOccuredCount;
 
     private Integer percentage;

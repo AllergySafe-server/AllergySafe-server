@@ -258,7 +258,7 @@ public class GuessService {
             guessedData.setType(GuessedType.from(type));
             guessedData.setElementId(elementId);
             guessedData.setName(name);
-            guessedData.setTotalIngestedCount(totalCount);
+            guessedData.setTotalCount(totalCount);
             guessedData.setTotalSymptomOccuredCount(occuredCount);
             guessedData.setPercentage(percent);
             guessedData.setCards(cards);
