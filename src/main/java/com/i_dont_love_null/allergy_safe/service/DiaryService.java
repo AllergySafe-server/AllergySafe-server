@@ -42,10 +42,14 @@ public class DiaryService {
 
     private final DiaryPeriodResponse diaryPeriodResponse;
 
-    public IdResponse createDiary(Long profileId, DiaryRequest diaryRequest) {
+    private final ProfileService profileService;
+
+
+    public IdResponse createDiary(User user, Long profileId, DiaryRequest diaryRequest) {
+        profileService.checkIfFamily(user, profileId);
+
         Profile profile;
         Optional<Profile> optionalProfile = profileRepository.findById(profileId);
-
 
         if (optionalProfile.isPresent()) {
             profile = optionalProfile.get();
@@ -73,7 +77,22 @@ public class DiaryService {
         return idResponse;
     }
 
-    public IdResponse addDiaryElement(Long diaryId, DiaryElementCreateRequest diaryElementCreateRequest) {
+    public void checkIfDiaryExists(Long diaryId) {
+        Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
+        if (diaryOptional.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 다이어리입니다.");
+    }
+
+    public void checkIfFamilyByDiaryId(User user, Long diaryId) {
+        checkIfDiaryExists(diaryId);
+        Diary diary = diaryRepository.findById(diaryId).get();
+        Profile profile = diary.getProfile();
+        profileService.checkIfFamily(user, profile.getId());
+
+    }
+
+    public IdResponse addDiaryElement(User user, Long diaryId, DiaryElementCreateRequest diaryElementCreateRequest) {
+        checkIfFamilyByDiaryId(user, diaryId);
 
         Long elementId = diaryElementCreateRequest.getId();
         Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
@@ -168,7 +187,8 @@ public class DiaryService {
     }
 
     @Transactional
-    public IdResponse deleteDiaryElement(Long diaryId, DiaryElementDeleteRequest diaryElementDeleteRequest) {
+    public IdResponse deleteDiaryElement(User user, Long diaryId, DiaryElementDeleteRequest diaryElementDeleteRequest) {
+        checkIfFamilyByDiaryId(user, diaryId);
 
         Long elementId = diaryElementDeleteRequest.getId();
         Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
@@ -237,8 +257,11 @@ public class DiaryService {
         return idResponse;
     }
 
-    public DiaryResponse getDiaryList(Long profileId, LocalDate date) {
+    public DiaryResponse getDiaryList(User user, Long profileId, LocalDate date) {
+        profileService.checkIfFamily(user, profileId);
+
         Optional<Diary> optionalDiary = diaryRepository.findByProfileIdAndDate(profileId, date);
+
         if (optionalDiary.isPresent()) {
             Diary diary = optionalDiary.get();
             Profile profile = diary.getProfile();
@@ -256,7 +279,8 @@ public class DiaryService {
         }
     }
 
-    public IdResponse deleteDiary(Long diaryId) {
+    public IdResponse deleteDiary(User user, Long diaryId) {
+        checkIfFamilyByDiaryId(user, diaryId);
         Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
         Diary diary;
 
@@ -272,17 +296,14 @@ public class DiaryService {
         return idResponse;
     }
 
-    public DiaryPeriodResponse getDiaryPeriod(Long profileId, LocalDate startDate, LocalDate endDate) {
+    public DiaryPeriodResponse getDiaryPeriod(User user, Long profileId, LocalDate startDate, LocalDate endDate) {
+        profileService.checkIfFamily(user, profileId);
+
         Optional<Profile> profileOptional = profileRepository.findById(profileId);
         Profile profile;
 
         if (profileOptional.isPresent()) profile = profileOptional.get();
         else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 프로필입니다.");
-
-        LocalDate date = LocalDate.now();
-        if (startDate.isAfter(date) || endDate.isAfter(date)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "미래의 날짜로는 조회할 수 없습니다.");
-        }
 
         if (startDate.isAfter(endDate)) {
             throw new ResponseStatusException(
