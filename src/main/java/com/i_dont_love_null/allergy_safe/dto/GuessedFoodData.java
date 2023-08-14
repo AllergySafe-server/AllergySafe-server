@@ -16,6 +16,8 @@ public class GuessedFoodData {
     private String name;
     private Integer totalIngestedCount;
     private Integer totalSymptomOccuredCount;
+
+    private Integer percentage;
     private List<FoodCard> foodCards;
 
 }

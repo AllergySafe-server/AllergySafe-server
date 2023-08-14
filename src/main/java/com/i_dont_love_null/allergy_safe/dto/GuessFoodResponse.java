@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @Service
 public class GuessFoodResponse {
-    private Long id;
+    private Long profileId;
     private String name;
     private LocalDate startDate;
     private LocalDate endDate;
