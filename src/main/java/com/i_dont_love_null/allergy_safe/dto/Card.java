@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,6 +17,6 @@ public class Card {
     private CardElementType type;
     private Long elementId;
     private String name;
-    private LocalDateTime date;
+    private LocalDateTime dateTime;
     private List<Symptom> symptoms;
 }
