@@ -5,11 +5,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Service
-public class FriendRequest {
+public class GuessResponse {
     private Long profileId;
+    private String name;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private List<GuessedData> guessedData;
+
 }

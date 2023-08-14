@@ -3,10 +3,7 @@ package com.i_dont_love_null.allergy_safe.controller;
 import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.model.Profile;
 import com.i_dont_love_null.allergy_safe.model.User;
-import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeRequest;
-import com.i_dont_love_null.allergy_safe.security.dto.PasswordChangeResponse;
-import com.i_dont_love_null.allergy_safe.security.dto.RegistrationRequest;
-import com.i_dont_love_null.allergy_safe.security.dto.RegistrationResponse;
+import com.i_dont_love_null.allergy_safe.security.dto.*;
 import com.i_dont_love_null.allergy_safe.security.service.UserDetailsServiceImpl;
 import com.i_dont_love_null.allergy_safe.security.service.UserService;
 import com.i_dont_love_null.allergy_safe.service.FriendService;
@@ -106,4 +103,41 @@ public class UserController {
     public ResponseEntity<IdResponse> deleteFriend(@PathVariable Long profileId) {
         return ResponseEntity.status(HttpStatus.OK).body(friendService.deleteFriend(userDetailsService.loadCurrentUser(), profileId));
     }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<IdResponse> deleteUser() {
+        User currentUser = userDetailsService.loadCurrentUser();
+        final IdResponse idResponse = userService.deleteUser(currentUser);
+
+        return ResponseEntity.status(HttpStatus.OK).body(idResponse);
+    }
+
+    @GetMapping("/password-reset")
+    public ResponseEntity<SendPasswordResetEmailResponse> sendPasswordResetEmail(@RequestParam("email") String email) {
+        final SendPasswordResetEmailResponse sendPasswordResetEmailResponse = userService.sendPasswordResetEmail(email);
+        return ResponseEntity.status(HttpStatus.OK).body(sendPasswordResetEmailResponse);
+    }
+
+    @PostMapping("/password-reset")
+    public ResponseEntity<PasswordResetResponse> passwordReset(@RequestBody PasswordResetRequest passwordResetRequest) {
+        final PasswordResetResponse passwordResetResponse = userService.passwordReset(passwordResetRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(passwordResetResponse);
+    }
+
+    @PostMapping("/profile/image/{profileId}")
+    public ResponseEntity<IdResponse> addProfileImage(@PathVariable("profileId") Long profileId,
+                                                      @Valid @RequestBody ProfileImageUrlRequest profileImageUrlRequest) {
+
+        final IdResponse idResponse = profileService.addProfileImage(userDetailsService.loadCurrentUser(), profileId, profileImageUrlRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(idResponse);
+    }
+
+    @DeleteMapping("/profile/image/{profileId}")
+    public ResponseEntity<IdResponse> deleteProfileImage(@PathVariable("profileId") Long profileId) {
+        final IdResponse idResponse = profileService.deleteProfileImage(userDetailsService.loadCurrentUser(), profileId);
+        return ResponseEntity.status(HttpStatus.OK).body(idResponse);
+
+    }
+
+
 }

@@ -59,6 +59,7 @@ swagger:
   contact-mail: ${SWAGGER_CONTACT_MAIL:example@example.com}
   contact-url: ${SWAGGER_CONTACT_URL:https://example.com}
   app-name: ${SWAGGER_APP_NAME:Example App}
+  app-domain: ${SWAGGER_APP_DOMAIN:http://localhost:8080}
   app-description: ${SWAGGER_APP_DESCRIPTION:Example App Description}
   app-version: ${SWAGGER_APP_VERSION:1.0.0}
   app-license-url: ${SWAGGER_APP_LICENSE_URL:https://www.apache.org/licenses/LICENSE-2.0.html}

@@ -44,4 +44,11 @@ public class Profile {
             joinColumns = @JoinColumn(name = "PROFILE_ID"),
             inverseJoinColumns = @JoinColumn(name = "INGREDIENT_ID"))
     private List<Ingredient> ingredients = new ArrayList<>();
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+    private List<Diary> diaries;
+
+
+    private String imageUrl;
 }
