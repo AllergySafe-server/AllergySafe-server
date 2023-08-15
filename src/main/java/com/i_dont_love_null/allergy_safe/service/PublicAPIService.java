@@ -207,9 +207,9 @@ public class PublicAPIService {
         List<String> array3 = new ArrayList<>();
 
         List<Allergy> knownAllergies = allergyRepository.findAll();
-        for (String foundAllergy: array2) {
+        for (String foundAllergy : array2) {
             boolean isSimilar = false;
-            for (Allergy knownAllergy: knownAllergies) {
+            for (Allergy knownAllergy : knownAllergies) {
                 if (foundAllergy.contains(knownAllergy.getName())) {
                     isSimilar = true;
                     break;

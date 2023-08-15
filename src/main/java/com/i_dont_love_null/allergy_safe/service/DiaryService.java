@@ -14,7 +14,6 @@ import org.webjars.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -63,7 +62,7 @@ public class DiaryService {
         boolean isLocal = appProperties.getAppDomain().contains("localhost");
         LocalDate today = LocalDate.now();
 
-        if(!isLocal) {
+        if (!isLocal) {
 
             LocalDateTime todayDateTime = LocalDateTime.now().plusHours(9);
             today = today.withYear(todayDateTime.getYear()).withMonth(todayDateTime.getMonthValue()).withDayOfMonth(todayDateTime.getDayOfMonth());
@@ -122,7 +121,7 @@ public class DiaryService {
 
         LocalDateTime currentDateTime = LocalDateTime.now();
         boolean isLocal = appProperties.getAppDomain().contains("localhost");
-        if(!isLocal) {
+        if (!isLocal) {
             currentDateTime = currentDateTime.plusHours(9);
         }
         LocalDateTime datetime = diaryElementCreateRequest.getDateTime();

@@ -52,7 +52,8 @@ public class GuessService {
         //프로필 아이디, 날짜 범위와 대응되는 다이어리id를 모두 담는 배열 설정
         List<Long> diaryIdList1 = new ArrayList<>();
         for (LocalDate tempDate = startDate; tempDate.isBefore(endDate) || tempDate.isEqual(endDate); tempDate = tempDate.plusDays(1)) {
-            diaryIdList1.add(diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate).getId());
+            Diary foundDiary = diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate);
+            if (Objects.nonNull(foundDiary)) diaryIdList1.add(foundDiary.getId());
         }
         //다이어리id와 대응되는 먹은 음식의 foodId를 모두 담는 배열 설정
         List<Long> foodIdList1 = new ArrayList<>();
@@ -289,7 +290,8 @@ public class GuessService {
         //프로필 아이디, 날짜 범위와 대응되는 다이어리id를 모두 담는 배열 설정
         List<Long> diaryIdList1 = new ArrayList<>();
         for (LocalDate tempDate = startDate; tempDate.isBefore(endDate) || tempDate.isEqual(endDate); tempDate = tempDate.plusDays(1)) {
-            diaryIdList1.add(diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate).getId());
+            Diary foundDiary = diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate);
+            if (Objects.nonNull(foundDiary)) diaryIdList1.add(foundDiary.getId());
         }
         //다이어리id와 대응되는 복용한 약의 medicineId를 모두 담는 배열 설정
         List<Long> medicineIdList1 = new ArrayList<>();

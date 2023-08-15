@@ -27,6 +27,16 @@ public class FoodService {
 
     private final IdResponse idResponse;
 
+    public List<FoodResponse> getAllFoods() {
+        List<Food> foods = foodRepository.findAll();
+        List<FoodResponse> result = new ArrayList<>();
+
+        for (Food food : foods) {
+            result.add(food.toFoodResponse());
+        }
+        return result;
+    }
+
     public FoodResponse getFoodResponseById(Long foodId) {
         Optional<Food> food = foodRepository.findById(foodId);
 
