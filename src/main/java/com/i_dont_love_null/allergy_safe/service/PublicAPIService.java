@@ -1,10 +1,6 @@
 package com.i_dont_love_null.allergy_safe.service;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.internal.LinkedTreeMap;
+
 import com.i_dont_love_null.allergy_safe.dto.FoodFromApiResponse;
 import com.i_dont_love_null.allergy_safe.dto.IdResponse;
 import com.i_dont_love_null.allergy_safe.dto.MedicineFromApiResponse;
@@ -14,6 +10,9 @@ import com.i_dont_love_null.allergy_safe.repository.*;
 import com.i_dont_love_null.allergy_safe.utils.SimpleHttp;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
@@ -123,26 +123,28 @@ public class PublicAPIService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
         String json = result.getBody();
 
-        Map<String, Object> jsonData;
-        Map<String, Object> c005Data;
-        List<Map<String, Object>> rowsData;
+        JSONObject jsonData;
+        JSONObject c005Data;
+        JSONArray rowsData;
 
         try {
-            Gson gson = new Gson();
-            jsonData = gson.fromJson(json, Map.class);
-            c005Data = (Map<String, Object>) jsonData.get("C005");
-            rowsData = (List<Map<String, Object>>) c005Data.get("row");
-        } catch (Exception ignored) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
-        }
+            jsonData = new JSONObject(json);
+            c005Data = jsonData.getJSONObject("C005");
+            rowsData = c005Data.getJSONArray("row");
+            if (Objects.isNull(rowsData))
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
 
-        if (Objects.isNull(rowsData))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
-
-        for (Map<String, Object> rowData : rowsData) {
-            if (rowData.containsKey("PRDLST_REPORT_NO")) {
-                return (String) rowData.get("PRDLST_REPORT_NO");
+            for (int i = 0; i < rowsData.length(); i++) {
+                JSONObject rowData = rowsData.getJSONObject(i);
+                if (rowData.has("PRDLST_REPORT_NO")) {
+                    if (rowData.get("PRDLST_REPORT_NO") instanceof String)
+                        return (String) rowData.get("PRDLST_REPORT_NO");
+                }
             }
+        } catch (JSONException jsonException) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요. (JSONException)");
+        } catch (Exception exception) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "바코드 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
     }
@@ -160,33 +162,43 @@ public class PublicAPIService {
         String json;
         try {
             json = SimpleHttp.get(uri);
+        } catch (IOException ignored) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "공공 데이터 API 서버가 응답하지 않습니다. 잠시 후 다시 시도해 주세요. (IOException)");
         } catch (Exception ignored) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "공공 데이터 API 서버가 응답하지 않습니다. 잠시 후 다시 시도해 주세요.");
         }
 
-        Gson gson;
-        Map<String, Object> jsonData;
-        Map<String, Object> bodyData;
-        List<LinkedTreeMap<String, Object>> itemsData;
-        LinkedTreeMap<String, Object> itemData;
+        JSONObject jsonObject;
+        JSONObject bodyData;
+        JSONArray itemsData;
+        JSONObject itemData;
+        String name = "";
+        String materialsString = "";
+        String allergiesString = "";
+        List<String> materials;
+        List<String> allergies;
 
         try {
-            gson = new Gson();
-            jsonData = gson.fromJson(json, Map.class);
-            bodyData = (Map<String, Object>) jsonData.get("body");
-            itemsData = (List<LinkedTreeMap<String, Object>>) bodyData.get("items");
-            itemData = (LinkedTreeMap<String, Object>) itemsData.get(0).get("item");
+            jsonObject = new JSONObject(json);
+            bodyData = jsonObject.getJSONObject("body");
+            itemsData = bodyData.getJSONArray("items");
+            itemData = itemsData.getJSONObject(0).getJSONObject("item");
+
+            if (itemData.has("prdlstNm")) {
+                if (itemData.get("prdlstNm") instanceof String) name = (String) itemData.get("prdlstNm");
+            }
+            if (itemData.has("rawmtrl")) {
+                if (itemData.get("rawmtrl") instanceof String) materialsString = (String) itemData.get("rawmtrl");
+            }
+            if (itemData.has("allergy")) {
+                if (itemData.get("allergy") instanceof String) allergiesString = (String) itemData.get("allergy");
+            }
+        } catch (JSONException ignored) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요. (JSON Parse 오류)");
         } catch (Exception ignored) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품 정보를 불러올 수 없습니다. 수동으로 항목을 추가해 주세요.");
         }
         FoodFromApiResponse foodFromApiResponse = new FoodFromApiResponse();
-
-        String name = (String) itemData.get("prdlstNm");
-        String materialsString = (String) itemData.get("rawmtrl");
-        String allergiesString = (String) itemData.get("allergy");
-        List<String> materials;
-        List<String> allergies;
-
         materialsString = materialsString.replaceAll("\\([^)]*\\)", "");
         materialsString = materialsString.replaceAll("\\d+(\\.\\d+)?%", "");
         materialsString = materialsString.replace("※특정성분:", ",");
@@ -249,26 +261,36 @@ public class PublicAPIService {
         String json;
         try {
             json = SimpleHttp.get(uri);
+        } catch (IOException ignored) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "공공 데이터 API 서버가 응답하지 않습니다. 잠시 후 다시 시도해 주세요. (IOException)");
         } catch (Exception ignored) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "공공 데이터 API 서버가 응답하지 않습니다. 잠시 후 다시 시도해 주세요.");
         }
 
-        JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-        JsonObject body = jsonObject.getAsJsonObject("body");
-        JsonArray items;
-        JsonObject item;
-        try {
-            items = body.getAsJsonArray("items");
-            item = items.get(0).getAsJsonObject();
-        } catch (Exception ignored) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "의약품 정보를 불러올 수 없습니다.");
-        }
+
+        JSONObject jsonObject;
+        JSONObject body;
+        JSONArray items;
+        JSONObject item;
+        String name = "";
+        String mainIngredientsString = "";
+        String ingredientsString = "";
 
         try {
+            jsonObject = new JSONObject(json);
+            body = jsonObject.getJSONObject("body");
+            items = body.getJSONArray("items");
+            item = items.getJSONObject(0);
 
-            String name = item.get("ITEM_NAME").getAsString();
-            String mainIngredientsString = item.get("MAIN_ITEM_INGR").getAsString();
-            String ingredientsString = item.get("INGR_NAME").getAsString();
+            if (item.has("ITEM_NAME")) {
+                if (item.get("ITEM_NAME") instanceof String) name = (String) item.get("ITEM_NAME");
+            }
+            if (item.has("MAIN_ITEM_INGR")) {
+                if (item.get("MAIN_ITEM_INGR") instanceof String) mainIngredientsString = (String) item.get("MAIN_ITEM_INGR");
+            }
+            if (item.has("INGR_NAME")) {
+                if (item.get("INGR_NAME") instanceof String) ingredientsString = (String) item.get("INGR_NAME");
+            }
 
             mainIngredientsString = mainIngredientsString.replaceAll("\\[.*?\\]", "");
             mainIngredientsString = mainIngredientsString.replace('·', '|');
@@ -297,6 +319,8 @@ public class PublicAPIService {
             medicineFromApiResponse.setIngredients(ingredients);
 
             return medicineFromApiResponse;
+        } catch (JSONException ignored) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "의약품 정보를 불러올 수 없습니다. (JSONException)");
         } catch (Exception ignored) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "의약품 정보를 불러올 수 없습니다.");
         }

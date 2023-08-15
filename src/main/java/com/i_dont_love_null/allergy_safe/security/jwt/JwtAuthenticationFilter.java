@@ -51,9 +51,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authToken = header.replace(SecurityConstants.TOKEN_PREFIX, StringUtils.EMPTY);
             try {
                 email = jwtTokenManager.getEmailFromToken(authToken);
-            } catch (JWTVerificationException e) {
-                System.out.println(e.getMessage());
-            } catch (Exception ignored) {
+            } catch (JWTVerificationException jwtVerificationException) {
+                System.out.println("(1)");
+            } catch (Exception exception) {
+                System.out.println("(2)");
             }
         }
 

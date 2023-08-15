@@ -14,6 +14,7 @@ import java.util.List;
 public class GuessedData {
     private GuessedType type;
     private Long elementId;
+    private String imageUrl;
     private String name;
     private Integer totalCount;
     private Integer totalSymptomOccuredCount;

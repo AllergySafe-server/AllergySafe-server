@@ -17,11 +17,11 @@ public class SecurityConstants {
     private static final String[] GET_URI_WHITE_LIST = new String[]{"/api/health", "/api/user/validate", "/api/user/password-reset", "/api/user/profile/share/**", "/api/swagger/**"};
     private static final String[] POST_URI_WHITE_LIST = new String[]{"/api/user", "/api/auth/login", "/api/user/password-reset"};
 
-    public static String [] getGetUriWhiteList() {
+    public static String[] getGetUriWhiteList() {
         return GET_URI_WHITE_LIST.clone();
     }
 
-    public static String [] getPostUriWhiteList() {
+    public static String[] getPostUriWhiteList() {
         return POST_URI_WHITE_LIST.clone();
     }
 
