@@ -51,7 +51,7 @@ public class PublicAPIService {
         List<Allergy> foundAllergies = new ArrayList<>();
         for (String allergyName : foodFromApiResponse.getAllergies()) {
             Allergy allergy = Optional.ofNullable(allergyRepository.findByName(allergyName)).orElseGet(() -> {
-                Allergy newAllergy = new Allergy(null, allergyName);
+                Allergy newAllergy = new Allergy(null, allergyName, null);
                 return allergyRepository.save(newAllergy);
             });
             foundAllergies.add(allergy);
@@ -60,7 +60,7 @@ public class PublicAPIService {
         List<Material> foundMaterials = new ArrayList<>();
         for (String materialName : foodFromApiResponse.getMaterials()) {
             Material material = Optional.ofNullable(materialRepository.findByName(materialName)).orElseGet(() -> {
-                Material newMaterial = new Material(null, materialName);
+                Material newMaterial = new Material(null, materialName, null);
                 return materialRepository.save(newMaterial);
             });
             foundMaterials.add(material);
@@ -91,7 +91,7 @@ public class PublicAPIService {
         List<Ingredient> foundIngredients = new ArrayList<>();
         for (String ingredientName : medicineFromApiResponse.getIngredients()) {
             Ingredient ingredient = Optional.ofNullable(ingredientRepository.findByName(ingredientName)).orElseGet(() -> {
-                Ingredient newIngredient = new Ingredient(null, ingredientName);
+                Ingredient newIngredient = new Ingredient(null, ingredientName, null);
                 return ingredientRepository.save(newIngredient);
             });
             foundIngredients.add(ingredient);
