@@ -4,9 +4,6 @@ import com.i_dont_love_null.allergy_safe.dto.AlertRequest;
 import com.i_dont_love_null.allergy_safe.dto.AlertResponse;
 import com.i_dont_love_null.allergy_safe.dto.SimpleProfile;
 import com.i_dont_love_null.allergy_safe.model.*;
-import com.i_dont_love_null.allergy_safe.repository.AllergyRepository;
-import com.i_dont_love_null.allergy_safe.repository.IngredientRepository;
-import com.i_dont_love_null.allergy_safe.repository.MaterialRepository;
 import com.i_dont_love_null.allergy_safe.repository.UserRepository;
 import com.i_dont_love_null.allergy_safe.utils.EntityListToStringList;
 import com.i_dont_love_null.allergy_safe.utils.FindIntersection;
@@ -18,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -25,9 +23,6 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AlertService {
     private final UserRepository userRepository;
-    private final AllergyRepository allergyRepository;
-    private final MaterialRepository materialRepository;
-    private final IngredientRepository ingredientRepository;
 
     private final AlertResponse alertResponse;
 
@@ -75,14 +70,18 @@ public class AlertService {
             List<String> ingredientNames = entityListToStringList.convertWithName(profile.getIngredients());
 
             if (isFood) {
-                List<String> allergyNamesFromFood = entityListToStringList.convertWithName(food.getAllergies());
-                simpleProfile.setAllergies(FindIntersection.find(allergyNames, allergyNamesFromFood));
+                if (Objects.nonNull(food)) {
+                    List<String> allergyNamesFromFood = entityListToStringList.convertWithName(food.getAllergies());
+                    simpleProfile.setAllergies(FindIntersection.find(allergyNames, allergyNamesFromFood));
 
-                List<String> materialNamesFromFood = entityListToStringList.convertWithName(food.getMaterials());
-                simpleProfile.setMaterials(FindIntersection.find(materialNames, materialNamesFromFood));
+                    List<String> materialNamesFromFood = entityListToStringList.convertWithName(food.getMaterials());
+                    simpleProfile.setMaterials(FindIntersection.find(materialNames, materialNamesFromFood));
+                }
             } else {
-                List<String> ingredientNamesFromMedicine = entityListToStringList.convertWithName(medicine.getIngredients());
-                simpleProfile.setIngredients(FindIntersection.find(ingredientNames, ingredientNamesFromMedicine));
+                if (Objects.nonNull(medicine)) {
+                    List<String> ingredientNamesFromMedicine = entityListToStringList.convertWithName(medicine.getIngredients());
+                    simpleProfile.setIngredients(FindIntersection.find(ingredientNames, ingredientNamesFromMedicine));
+                }
             }
 
             if (profileService.isFamily(user, profileId)) {

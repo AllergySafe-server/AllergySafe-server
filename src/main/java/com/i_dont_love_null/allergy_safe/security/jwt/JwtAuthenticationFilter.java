@@ -1,5 +1,6 @@
 package com.i_dont_love_null.allergy_safe.security.jwt;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.i_dont_love_null.allergy_safe.security.service.UserDetailsServiceImpl;
 import com.i_dont_love_null.allergy_safe.security.utils.SecurityConstants;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         final String requestURI = req.getRequestURI();
 
-        if (new ArrayList<>(Arrays.asList(SecurityConstants.GET_URI_WHITE_LIST)).contains(requestURI)) {
+        if (new ArrayList<>(Arrays.asList(SecurityConstants.getGetUriWhiteList())).contains(requestURI)) {
             chain.doFilter(req, res);
             return;
         }
@@ -50,8 +51,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             authToken = header.replace(SecurityConstants.TOKEN_PREFIX, StringUtils.EMPTY);
             try {
                 email = jwtTokenManager.getEmailFromToken(authToken);
-            } catch (Exception e) {
-                log.error("Authentication Exception : {}", e.getMessage());
+            } catch (JWTVerificationException e) {
+                System.out.println(e.getMessage());
+            } catch (Exception ignored) {
             }
         }
 

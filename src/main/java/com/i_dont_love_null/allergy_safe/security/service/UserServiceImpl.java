@@ -144,11 +144,11 @@ public class UserServiceImpl implements UserService {
         }
 
         String encodedNewPassword = bCryptPasswordEncoder.encode(passwordChangeRequest.getNewPassword());
-        user = user.toBuilder().
+        User newUser = user.toBuilder().
                 password(encodedNewPassword)
                 .build();
-        userRepository.save(user);
-        return new PasswordChangeResponse(user.getId());
+        userRepository.save(newUser);
+        return new PasswordChangeResponse(newUser.getId());
     }
 
     public void checkIfExists(Long userId) {
@@ -173,12 +173,12 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 사용자입니다.");
         }
 
-        user = user.toBuilder()
+        User newUser = user.toBuilder()
                 .isActive(false)
                 .build();
-        userRepository.save(user);
+        userRepository.save(newUser);
 
-        idResponse.setId(user.getId());
+        idResponse.setId(newUser.getId());
         return idResponse;
     }
 
