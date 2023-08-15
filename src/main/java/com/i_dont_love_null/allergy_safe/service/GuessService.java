@@ -45,7 +45,7 @@ public class GuessService {
         if (startDate.isAfter(endDate)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "시작 날짜가 끝 날짜보다 앞서야합니다.");
         }
-        if (!diaryRepository.existsDiariesByProfileId(profileId)) {
+        if (!diaryRepository.existsByProfileId(profileId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 프로필에 등록된 다이어리가 없습니다.");
         }
 
@@ -282,7 +282,7 @@ public class GuessService {
         if (startDate.isAfter(endDate)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "시작 날짜가 끝 날짜보다 앞서야합니다.");
         }
-        if (!diaryRepository.existsDiariesByProfileId(profileId)) {
+        if (!diaryRepository.existsByProfileId(profileId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 프로필에 등록된 다이어리가 없습니다.");
         }
 
