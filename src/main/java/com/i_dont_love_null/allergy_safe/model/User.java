@@ -47,6 +47,6 @@ public class User {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "REVIEW_ID", referencedColumnName = "REVIEW_ID")
-//    @JsonIgnore
+    @JsonIgnore
     private Review review;
 }
