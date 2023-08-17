@@ -23,4 +23,7 @@ public class DiaryElementCreateRequest {
     @Schema(description = "추가할 요소를 동작한 시간(food라면 food를 먹은 시간)", example = "2023-08-10T20:30:45")
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateTime;
+
+    @Schema(description = "base64String", example = "data:image/png;base64,iVBORw0KGgoAAAANSU...")
+    private String base64String;
 }

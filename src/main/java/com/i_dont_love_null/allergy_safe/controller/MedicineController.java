@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Tag(name = "Medicine", description = "의약품 API")
 @CrossOrigin
@@ -21,5 +23,11 @@ public class MedicineController {
     @ResponseBody
     public ResponseEntity<MedicineResponse> getMedicineById(@PathVariable Long medicineId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(medicineService.getMedicineResponseById(medicineId));
+    }
+
+    @GetMapping("")
+    @ResponseBody
+    public ResponseEntity<List<MedicineResponse>> getAllMedicines() {
+        return ResponseEntity.status(HttpStatus.OK).body(medicineService.getAllMedicines());
     }
 }

@@ -45,14 +45,15 @@ public class GuessService {
         if (startDate.isAfter(endDate)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "시작 날짜가 끝 날짜보다 앞서야합니다.");
         }
-        if (!diaryRepository.existsDiariesByProfileId(profileId)) {
+        if (!diaryRepository.existsByProfileId(profileId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 프로필에 등록된 다이어리가 없습니다.");
         }
 
         //프로필 아이디, 날짜 범위와 대응되는 다이어리id를 모두 담는 배열 설정
         List<Long> diaryIdList1 = new ArrayList<>();
         for (LocalDate tempDate = startDate; tempDate.isBefore(endDate) || tempDate.isEqual(endDate); tempDate = tempDate.plusDays(1)) {
-            diaryIdList1.add(diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate).getId());
+            Diary foundDiary = diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate);
+            if (Objects.nonNull(foundDiary)) diaryIdList1.add(foundDiary.getId());
         }
         //다이어리id와 대응되는 먹은 음식의 foodId를 모두 담는 배열 설정
         List<Long> foodIdList1 = new ArrayList<>();
@@ -180,6 +181,7 @@ public class GuessService {
             Allergy allergy = allergyRepository.findByName(name);
             Material material = null;
             String type = "allergy";
+            String imageUrl = null;
             int totalCount = 0;
             int occuredCount = 0;
             Long elementId;
@@ -188,6 +190,9 @@ public class GuessService {
             if (Objects.isNull(allergy)) {
                 material = materialRepository.findByName(name);
                 type = "material";
+                if (Objects.nonNull(material)) imageUrl = material.getImageUrl();
+            } else {
+                imageUrl = allergy.getImageUrl();
             }
             if (type.equals("allergy")) {
                 totalCount = totalCountMapAllergy.get(name);
@@ -256,6 +261,7 @@ public class GuessService {
             GuessedData guessedData = new GuessedData();
             guessedData.setType(GuessedType.from(type));
             guessedData.setElementId(elementId);
+            guessedData.setImageUrl(imageUrl);
             guessedData.setName(name);
             guessedData.setTotalCount(totalCount);
             guessedData.setTotalSymptomOccuredCount(occuredCount);
@@ -282,14 +288,15 @@ public class GuessService {
         if (startDate.isAfter(endDate)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "시작 날짜가 끝 날짜보다 앞서야합니다.");
         }
-        if (!diaryRepository.existsDiariesByProfileId(profileId)) {
+        if (!diaryRepository.existsByProfileId(profileId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 프로필에 등록된 다이어리가 없습니다.");
         }
 
         //프로필 아이디, 날짜 범위와 대응되는 다이어리id를 모두 담는 배열 설정
         List<Long> diaryIdList1 = new ArrayList<>();
         for (LocalDate tempDate = startDate; tempDate.isBefore(endDate) || tempDate.isEqual(endDate); tempDate = tempDate.plusDays(1)) {
-            diaryIdList1.add(diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate).getId());
+            Diary foundDiary = diaryRepository.findDiaryByProfileIdAndDate(profileId, tempDate);
+            if (Objects.nonNull(foundDiary)) diaryIdList1.add(foundDiary.getId());
         }
         //다이어리id와 대응되는 복용한 약의 medicineId를 모두 담는 배열 설정
         List<Long> medicineIdList1 = new ArrayList<>();
@@ -377,12 +384,17 @@ public class GuessService {
             String type = "ingredient";
             int totalCount = 0;
             int occuredCount = 0;
-            Long elementId;
+            Long elementId = null;
+            String imageUrl = null;
             List<Long> medicineIdList = new ArrayList<>();
 
             totalCount = totalCountMapIngredient.get(name);
             occuredCount = occurCountMapIngredient.get(name);
-            elementId = ingredient.getId();
+            if (Objects.nonNull(ingredient)) {
+                elementId = ingredient.getId();
+                imageUrl = ingredient.getImageUrl();
+            }
+
 
             for (Long diaryId : diaryIdList1) {
                 Optional<Diary> diaryOptional = diaryRepository.findById(diaryId);
@@ -428,6 +440,7 @@ public class GuessService {
             GuessedData guessedData = new GuessedData();
             guessedData.setType(GuessedType.from(type));
             guessedData.setElementId(elementId);
+            guessedData.setImageUrl(imageUrl);
             guessedData.setName(name);
             guessedData.setTotalCount(totalCount);
             guessedData.setTotalSymptomOccuredCount(occuredCount);

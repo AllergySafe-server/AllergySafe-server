@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -16,6 +18,16 @@ import java.util.Optional;
 @AllArgsConstructor
 public class MedicineService {
     private final MedicineRepository medicineRepository;
+
+    public List<MedicineResponse> getAllMedicines() {
+        List<Medicine> medicines = medicineRepository.findAll();
+        List<MedicineResponse> result = new ArrayList<>();
+
+        for (Medicine medicine : medicines) {
+            result.add(medicine.toMedicineResponse());
+        }
+        return result;
+    }
 
     public MedicineResponse getMedicineResponseById(Long medicineId) {
         Optional<Medicine> medicine = medicineRepository.findById(medicineId);

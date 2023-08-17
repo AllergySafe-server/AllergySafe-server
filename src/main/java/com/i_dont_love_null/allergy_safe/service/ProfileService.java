@@ -26,6 +26,8 @@ public class ProfileService {
     private final IdResponse idResponse;
     private final ProfileListResponse profileListResponse;
 
+    private final ImageValidationService imageValidationService;
+
     public IdResponse createProfile(User user, ProfileRequest profileRequest) {
         idResponse.setId(profileRepository.save(
                 Profile.builder()
@@ -257,8 +259,15 @@ public class ProfileService {
 
         checkIfFamily(user, profileId);
 
+
+        String base64String = profileImageUrlRequest.getBase64String();
+
+        if (!imageValidationService.validateImage(base64String)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "PNG 또는 JPEG 파일만 업로드 가능합니다.");
+        }
+
         profile = profile.toBuilder()
-                .imageUrl(profileImageUrlRequest.getImageUrl())
+                .imageUrl(profileImageUrlRequest.getBase64String())
                 .build();
 
         profileRepository.save(profile);

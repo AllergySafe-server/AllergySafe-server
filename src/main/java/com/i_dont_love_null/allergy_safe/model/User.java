@@ -44,4 +44,9 @@ public class User {
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "FRIEND_ID"))
     private List<Friend> friends = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "REVIEW_ID", referencedColumnName = "REVIEW_ID")
+    @JsonIgnore
+    private Review review;
 }

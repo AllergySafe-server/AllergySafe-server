@@ -19,4 +19,6 @@ public class Ingredient implements Nameable {
 
     @Column(unique = true)
     private String name;
+
+    private String imageUrl;
 }

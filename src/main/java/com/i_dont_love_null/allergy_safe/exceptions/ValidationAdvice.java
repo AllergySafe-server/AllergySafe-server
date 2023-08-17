@@ -26,8 +26,6 @@ public class ValidationAdvice {
 
         final ValidationErrorResponse validationErrorResponse = new ValidationErrorResponse(HttpStatus.BAD_REQUEST, LocalDateTime.now(), errorList);
 
-        log.warn("Validation errors : {} , Parameters : {}", errorList, exception.getBindingResult().getTarget());
-
         return ResponseEntity.status(validationErrorResponse.getStatus()).body(validationErrorResponse);
     }
 

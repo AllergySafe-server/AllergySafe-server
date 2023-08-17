@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @Tag(name = "Food", description = "식품 API")
@@ -30,5 +31,11 @@ public class FoodController {
     @ResponseBody
     public ResponseEntity<FoodResponse> getFoodById(@PathVariable Long foodId) {
         return ResponseEntity.status(HttpStatus.CREATED).body(foodService.getFoodResponseById(foodId));
+    }
+
+    @GetMapping("")
+    @ResponseBody
+    public ResponseEntity<List<FoodResponse>> getAllFoods() {
+        return ResponseEntity.status(HttpStatus.OK).body(foodService.getAllFoods());
     }
 }

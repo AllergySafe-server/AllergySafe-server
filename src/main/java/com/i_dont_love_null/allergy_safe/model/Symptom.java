@@ -17,4 +17,6 @@ public class Symptom {
     private Long id;
 
     private String name;
+
+    private String imageUrl;
 }

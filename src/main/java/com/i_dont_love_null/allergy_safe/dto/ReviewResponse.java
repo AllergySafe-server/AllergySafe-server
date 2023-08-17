@@ -1,5 +1,6 @@
 package com.i_dont_love_null.allergy_safe.dto;
 
+import com.i_dont_love_null.allergy_safe.model.Review;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,19 +8,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
 @Service
-public class GuessedData {
-    private GuessedType type;
-    private Long elementId;
-    private String imageUrl;
-    private String name;
+public class ReviewResponse {
+    private Integer star;
+    private String content;
     private Integer totalCount;
-    private Integer totalSymptomOccuredCount;
-
-    private Integer percentage;
-    private List<Card> cards;
-
+    private Double average;
+    private List<Review> reviews;
 }

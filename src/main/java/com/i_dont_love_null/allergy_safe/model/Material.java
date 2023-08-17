@@ -20,4 +20,5 @@ public class Material implements Nameable {
     @Column(unique = true)
     private String name;
 
+    private String imageUrl;
 }

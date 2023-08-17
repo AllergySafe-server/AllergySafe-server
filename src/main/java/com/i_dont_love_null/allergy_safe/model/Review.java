@@ -11,25 +11,22 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Getter
 @Entity
-@Table(name = "OccuredSymptom")
-public class OccuredSymptom {
 
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "OCCUREDSYMPTOM_ID")
+    @Column(name = "REVIEW_ID")
+    @JsonIgnore
     private Long id;
 
+    private Integer star;
+
+    private String content;
+
+    @JsonIgnore
     private LocalDateTime datetime;
 
-    @Lob
-    private String imageUrl;
-
-    @ManyToOne
-    @JoinColumn(name = "SYMPTOM_ID")
-    private Symptom symptom;
-
-    @ManyToOne
-    @JoinColumn(name = "DIARY_ID")
+    @OneToOne(mappedBy = "review")
     @JsonIgnore
-    private Diary diary;
+    private User user;
 }

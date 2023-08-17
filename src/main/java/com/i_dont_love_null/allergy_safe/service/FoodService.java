@@ -27,6 +27,16 @@ public class FoodService {
 
     private final IdResponse idResponse;
 
+    public List<FoodResponse> getAllFoods() {
+        List<Food> foods = foodRepository.findAll();
+        List<FoodResponse> result = new ArrayList<>();
+
+        for (Food food : foods) {
+            result.add(food.toFoodResponse());
+        }
+        return result;
+    }
+
     public FoodResponse getFoodResponseById(Long foodId) {
         Optional<Food> food = foodRepository.findById(foodId);
 
@@ -67,7 +77,7 @@ public class FoodService {
         List<Allergy> foundAllergies = new ArrayList<>();
         for (String allergyName : foodRequest.getAllergies()) {
             Allergy allergy = Optional.ofNullable(allergyRepository.findByName(allergyName)).orElseGet(() -> {
-                Allergy newAllergy = new Allergy(null, allergyName);
+                Allergy newAllergy = new Allergy(null, allergyName, null);
                 return allergyRepository.save(newAllergy);
             });
             foundAllergies.add(allergy);
@@ -76,7 +86,7 @@ public class FoodService {
         List<Material> foundMaterials = new ArrayList<>();
         for (String materialName : foodRequest.getMaterials()) {
             Material material2 = Optional.ofNullable(materialRepository.findByName(materialName)).orElseGet(() -> {
-                Material newMaterial = new Material(null, materialName);
+                Material newMaterial = new Material(null, materialName, null);
                 return materialRepository.save(newMaterial);
             });
             foundMaterials.add(material2);

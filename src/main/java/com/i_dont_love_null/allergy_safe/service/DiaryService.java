@@ -2,6 +2,7 @@ package com.i_dont_love_null.allergy_safe.service;
 
 import com.i_dont_love_null.allergy_safe.dto.*;
 import com.i_dont_love_null.allergy_safe.model.*;
+import com.i_dont_love_null.allergy_safe.properties.AppProperties;
 import com.i_dont_love_null.allergy_safe.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -44,6 +46,9 @@ public class DiaryService {
 
     private final ProfileService profileService;
 
+    private final AppProperties appProperties;
+
+    private final ImageValidationService imageValidationService;
 
     public IdResponse createDiary(User user, Long profileId, DiaryRequest diaryRequest) {
         profileService.checkIfFamily(user, profileId);
@@ -56,7 +61,17 @@ public class DiaryService {
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 프로필입니다.");
 
         LocalDate diaryDate = diaryRequest.getDate();
-        if (diaryDate.isAfter(LocalDate.now())) {
+
+        boolean isLocal = appProperties.getAppDomain().contains("localhost");
+        LocalDate today = LocalDate.now();
+
+        if (!isLocal) {
+
+            LocalDateTime todayDateTime = LocalDateTime.now().plusHours(9);
+            today = today.withYear(todayDateTime.getYear()).withMonth(todayDateTime.getMonthValue()).withDayOfMonth(todayDateTime.getDayOfMonth());
+        }
+
+        if (diaryDate.isAfter(today)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "미래 날짜에 다이어리를 생성할 수 없습니다.");
         }
 
@@ -106,7 +121,12 @@ public class DiaryService {
         List<OccuredSymptom> occuredSymptoms = diary.getOccuredSymptoms();
 
         LocalDate diaryDate = diary.getDate();
+
         LocalDateTime currentDateTime = LocalDateTime.now();
+        boolean isLocal = appProperties.getAppDomain().contains("localhost");
+        if (!isLocal) {
+            currentDateTime = currentDateTime.plusHours(9);
+        }
         LocalDateTime datetime = diaryElementCreateRequest.getDateTime();
 
         LocalDateTime minimumDateTime = diaryDate.atStartOfDay();
@@ -164,10 +184,17 @@ public class DiaryService {
                 if (symptomOptional.isPresent()) symptom = symptomOptional.get();
                 else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 증상입니다.");
 
+                String base64String = diaryElementCreateRequest.getBase64String();
+
+                if (Objects.nonNull(base64String) && !imageValidationService.validateImage(base64String)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "PNG 또는 JPEG 파일만 업로드 가능합니다.");
+                }
+
                 OccuredSymptom occuredSymptom = OccuredSymptom.builder()
                         .datetime(datetime)
                         .diary(diary)
                         .symptom(symptom)
+                        .imageUrl(diaryElementCreateRequest.getBase64String())
                         .build();
 
                 occuredSymptomRepository.save(occuredSymptom);
@@ -312,7 +339,7 @@ public class DiaryService {
                     HttpStatus.BAD_REQUEST, "시작 날짜가 종료 날짜보다 이후일 수 없습니다.");
         }
 
-        diaryPeriodResponse.setDiaryList(diaryRepository.findByProfileIdAndDateBetween(profileId,
+        diaryPeriodResponse.setDiaryList(diaryRepository.findAllByProfileIdAndDateBetweenOrderByDateDesc(profileId,
                 startDate, endDate));
 
         return diaryPeriodResponse;
