@@ -21,6 +21,9 @@ public class OccuredSymptom {
 
     private LocalDateTime datetime;
 
+    @Lob
+    private String imageUrl;
+
     @ManyToOne
     @JoinColumn(name = "SYMPTOM_ID")
     private Symptom symptom;
