@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -46,6 +47,8 @@ public class DiaryService {
     private final ProfileService profileService;
 
     private final AppProperties appProperties;
+
+    private final ImageValidationService imageValidationService;
 
     public IdResponse createDiary(User user, Long profileId, DiaryRequest diaryRequest) {
         profileService.checkIfFamily(user, profileId);
@@ -181,10 +184,17 @@ public class DiaryService {
                 if (symptomOptional.isPresent()) symptom = symptomOptional.get();
                 else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "존재하지 않는 증상입니다.");
 
+                String base64String = diaryElementCreateRequest.getBase64String();
+
+                if (Objects.nonNull(base64String) && !imageValidationService.validateImage(base64String)) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "PNG 또는 JPEG 파일만 업로드 가능합니다.");
+                }
+
                 OccuredSymptom occuredSymptom = OccuredSymptom.builder()
                         .datetime(datetime)
                         .diary(diary)
                         .symptom(symptom)
+                        .imageUrl(diaryElementCreateRequest.getBase64String())
                         .build();
 
                 occuredSymptomRepository.save(occuredSymptom);

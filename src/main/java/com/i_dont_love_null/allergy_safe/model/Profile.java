@@ -50,5 +50,6 @@ public class Profile {
     private List<Diary> diaries;
 
 
+    @Lob
     private String imageUrl;
 }

@@ -286,7 +286,8 @@ public class PublicAPIService {
                 if (item.get("ITEM_NAME") instanceof String) name = (String) item.get("ITEM_NAME");
             }
             if (item.has("MAIN_ITEM_INGR")) {
-                if (item.get("MAIN_ITEM_INGR") instanceof String) mainIngredientsString = (String) item.get("MAIN_ITEM_INGR");
+                if (item.get("MAIN_ITEM_INGR") instanceof String)
+                    mainIngredientsString = (String) item.get("MAIN_ITEM_INGR");
             }
             if (item.has("INGR_NAME")) {
                 if (item.get("INGR_NAME") instanceof String) ingredientsString = (String) item.get("INGR_NAME");
