@@ -7,7 +7,6 @@ import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Getter
