@@ -38,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         final String requestURI = req.getRequestURI();
 
-        if (new ArrayList<>(Arrays.asList(SecurityConstants.getGetUriWhiteList())).contains(requestURI)) {
+        if (new ArrayList<>(Arrays.asList(SecurityConstants.getGetUriWhiteList())).contains(requestURI) ||
+                new ArrayList<>(Arrays.asList(SecurityConstants.getPostUriWhiteList())).contains(requestURI)) {
             chain.doFilter(req, res);
             return;
         }
