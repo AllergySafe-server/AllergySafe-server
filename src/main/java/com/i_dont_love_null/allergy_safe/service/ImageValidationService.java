@@ -14,6 +14,7 @@ import java.util.Base64;
 public class ImageValidationService {
 
     public boolean validateImage(String base64String) {
+        boolean isValid;
         String JPG_MAGIC_NUMBERS = "FFD8FFE0";
         String PNG_MAGIC_NUMBERS = "89504E47";
 
@@ -24,9 +25,10 @@ public class ImageValidationService {
         try {
             byte[] decodedString = Base64.getDecoder().decode(base64[1].getBytes());
             String encodeHexString = DatatypeConverter.printHexBinary(decodedString);
-            return encodeHexString.startsWith(JPG_MAGIC_NUMBERS) || encodeHexString.startsWith(PNG_MAGIC_NUMBERS);
+            isValid = encodeHexString.startsWith(JPG_MAGIC_NUMBERS) || encodeHexString.startsWith(PNG_MAGIC_NUMBERS);
         } catch (IllegalArgumentException illegalArgumentException) {
-            return false;
+            isValid = false;
         }
+        return isValid;
     }
 }
