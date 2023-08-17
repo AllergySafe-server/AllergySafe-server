@@ -38,6 +38,7 @@ public class SecurityConfiguration {
         return http.csrf().disable()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
+                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers(HttpMethod.GET, SecurityConstants.getGetUriWhiteList()).permitAll()
                 .antMatchers(HttpMethod.POST, SecurityConstants.getPostUriWhiteList()).permitAll()
                 .anyRequest().authenticated().and()
