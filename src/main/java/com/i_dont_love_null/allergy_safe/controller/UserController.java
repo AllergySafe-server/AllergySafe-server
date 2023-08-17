@@ -42,7 +42,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.validateEmailToken(emailToken));
     }
 
-    @PutMapping
+    @PostMapping("/me")
     public ResponseEntity<PasswordChangeResponse> changePassword(@Valid @RequestBody PasswordChangeRequest passwordChangeRequest) {
         User currentUser = userDetailsService.loadCurrentUser();
 

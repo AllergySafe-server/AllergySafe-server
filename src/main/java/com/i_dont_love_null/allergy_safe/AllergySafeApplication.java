@@ -13,4 +13,5 @@ public class AllergySafeApplication {
 
         SpringApplication.run(AllergySafeApplication.class, args);
     }
+
 }
