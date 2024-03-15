@@ -15,19 +15,19 @@
   
 ### Quick Links
 
-<a href='https://allergysafe.life'>
+<a href='https://allergysafe.life' target='_blank'>
 <img src='https://img.shields.io/badge/HOMEPAGE-gray?style=for-the-badge'>
 </a>
   
-<a href='https://youtu.be/819ZENij3T4'>
+<a href='https://youtu.be/819ZENij3T4' target='_blank'>
 <img src='https://img.shields.io/badge/VIDEO-blue?style=for-the-badge'>
 </a>
   	
-<a href='https://allergysafe.life/api/swagger/swagger-ui/index.html'>
+<a href='https://allergysafe.life/api/swagger/swagger-ui/index.html' target='_blank'>
 <img src='https://img.shields.io/badge/OPEN API-black?style=for-the-badge'>
 </a>
 
-<a href='https://github.com/MarmotCluster/AllergySafe-client'>
+<a href='https://github.com/MarmotCluster/AllergySafe-client' target='_blank'>
 <img src='https://img.shields.io/badge/FRONT END Repo-gray?style=for-the-badge'>
 </a>
 	
