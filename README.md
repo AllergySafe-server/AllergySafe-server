@@ -26,6 +26,10 @@
 <a href='https://allergysafe.life/api/swagger/swagger-ui/index.html'>
 <img src='https://img.shields.io/badge/OPEN API-black?style=for-the-badge'>
 </a>
+
+<a href='https://github.com/MarmotCluster/AllergySafe-client'>
+<img src='https://img.shields.io/badge/FRONT END Repo-gray?style=for-the-badge'>
+</a>
 	
 </div>
 
